@@ -57,6 +57,10 @@ export default function Login() {
         else if (role === 'CUSTOMER')   navigate('/customer/dashboard');
         else if (role === 'ADMIN')      navigate('/admin/dashboard');
         else                             navigate('/');
+        if (role === 'ADMIN')           navigate('/admin');
+        else if (role === 'SHOP_OWNER') navigate('/shop-owner');
+        else if (role === 'CUSTOMER')   navigate('/customer');
+        else                            navigate('/');
       }, 1200);
     } else {
       setStatus('error');

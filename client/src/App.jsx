@@ -11,6 +11,9 @@ import CTABanner from './components/CTABanner';
 import Footer from './components/Footer';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import CustomerDashboard from './pages/CustomerDashboard';
+import ShopOwnerDashboard from './pages/ShopOwnerDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useAuth } from './context/AuthContext';
 
@@ -113,6 +116,22 @@ function App() {
         <Route path="/shop-owner" element={<Navigate to="/owner/dashboard" replace />} />
 
         {/* ── Customer Routes ─────────────────────────────────────────────── */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute role="ADMIN">
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/*"
+          element={
+            <ProtectedRoute role="ADMIN">
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/customer/*"
           element={

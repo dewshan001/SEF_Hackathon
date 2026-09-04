@@ -7,6 +7,9 @@ const ROLE_DASHBOARD = {
   CUSTOMER: '/customer/dashboard',
   SHOP_OWNER: '/owner/dashboard',
   ADMIN: '/admin/dashboard',
+  CUSTOMER: '/customer',
+  SHOP_OWNER: '/shop-owner',
+  ADMIN: '/admin',
 };
 
 const NAV_LINKS = [
