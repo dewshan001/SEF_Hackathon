@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -11,6 +11,8 @@ import CTABanner from './components/CTABanner';
 import Footer from './components/Footer';
 import Login from './pages/Login';
 import Register from './pages/Register';
+
+const AUTH_ROUTES = ['/login', '/register'];
 
 function Landing() {
   return (
@@ -34,6 +36,9 @@ function App() {
     return localStorage.getItem('gasgo-theme') || 'dark';
   });
 
+  const location = useLocation();
+  const isAuthPage = AUTH_ROUTES.includes(location.pathname);
+
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('gasgo-theme', theme);
@@ -44,7 +49,7 @@ function App() {
 
   return (
     <div className="app">
-      <Navbar theme={theme} onToggleTheme={toggleTheme} />
+      {!isAuthPage && <Navbar theme={theme} onToggleTheme={toggleTheme} />}
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />

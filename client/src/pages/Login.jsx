@@ -38,22 +38,23 @@ export default function Login() {
   if (status === 'success') {
     return (
       <div className="auth-page">
-        <div className="auth-orb auth-orb-1" aria-hidden="true" />
-        <div className="auth-orb auth-orb-2" aria-hidden="true" />
-        <div className="auth-shell">
-          <div className="auth-card glass-card auth-success">
-            <div className="success-icon">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" aria-hidden="true">
-                <circle cx="12" cy="12" r="10" /><polyline points="20 6 9 17 4 12" />
-              </svg>
+        <LeftPanel />
+        <div className="auth-right">
+          <div className="auth-shell">
+            <div className="auth-card auth-success">
+              <div className="success-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" /><polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+              <h2 className="success-title">Welcome Back!</h2>
+              <p className="success-msg">
+                You've signed in successfully as <strong>{form.email}</strong>.
+              </p>
+              <Link to="/" className="btn-primary auth-submit-btn" id="login-continue-btn">
+                Continue to Home
+              </Link>
             </div>
-            <h2 className="success-title">Welcome Back!</h2>
-            <p className="success-msg">
-              You've signed in successfully as <strong>{form.email}</strong>.
-            </p>
-            <Link to="/" className="btn-primary auth-submit-btn" id="login-continue-btn">
-              Continue to Home
-            </Link>
           </div>
         </div>
       </div>
@@ -62,100 +63,210 @@ export default function Login() {
 
   return (
     <div className="auth-page">
-      <div className="auth-orb auth-orb-1" aria-hidden="true" />
-      <div className="auth-orb auth-orb-2" aria-hidden="true" />
-      <div className="auth-shell">
-        <div className="auth-card glass-card">
-          <div className="section-label">
-            <span className="dot" />
-            Welcome Back
+      <LeftPanel />
+      <div className="auth-right">
+        <div className="auth-orb auth-orb-1" aria-hidden="true" />
+        <div className="auth-orb auth-orb-2" aria-hidden="true" />
+
+        <div className="auth-shell">
+          {/* Mobile brand */}
+          <div className="auth-mobile-brand">
+            <div className="auth-mobile-brand-icon">
+              <FlameIcon size={18} />
+            </div>
+            <span className="auth-mobile-brand-name">Gas<span>Go</span> Lanka</span>
           </div>
-          <h1 className="auth-title">
-            Sign in to your <span className="gradient-text">account</span>
-          </h1>
-          <p className="auth-subtitle">
-            Order gas cylinders and track your deliveries in seconds.
-          </p>
 
-          <form className="auth-form" onSubmit={handleSubmit} noValidate>
-            <div className="field-group">
-              <label className="field-label" htmlFor="login-email">Email Address</label>
-              <input
-                id="login-email"
-                type="email"
-                autoComplete="email"
-                className={`field-input ${touched.email && errors.email ? 'has-error' : ''}`}
-                placeholder="you@example.com"
-                value={form.email}
-                onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                onBlur={() => handleBlur('email')}
-              />
-              {touched.email && errors.email && <span className="field-error">{errors.email}</span>}
+          <div className="auth-card">
+            <div className="auth-eyebrow">
+              <span className="auth-eyebrow-dot" />
+              Welcome Back
             </div>
+            <h1 className="auth-title">
+              Sign in to your <span className="gradient-text">account</span>
+            </h1>
+            <p className="auth-subtitle">
+              Order gas cylinders and track your deliveries in seconds.
+            </p>
 
-            <div className="field-group">
-              <label className="field-label" htmlFor="login-password">Password</label>
-              <div className="password-wrap">
+            <form className="auth-form" onSubmit={handleSubmit} noValidate>
+              <div className="field-group">
+                <label className="field-label" htmlFor="login-email">Email Address</label>
                 <input
-                  id="login-password"
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete="current-password"
-                  className={`field-input ${touched.password && errors.password ? 'has-error' : ''}`}
-                  placeholder="••••••••"
-                  value={form.password}
-                  onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-                  onBlur={() => handleBlur('password')}
+                  id="login-email"
+                  type="email"
+                  autoComplete="email"
+                  className={`field-input ${touched.email && errors.email ? 'has-error' : touched.email && !errors.email && form.email ? 'is-valid' : ''}`}
+                  placeholder="you@example.com"
+                  value={form.email}
+                  onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                  onBlur={() => handleBlur('email')}
                 />
-                <button
-                  type="button"
-                  className="pw-toggle-btn"
-                  id="login-pw-toggle-btn"
-                  onClick={() => setShowPassword(s => !s)}
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  <EyeIcon off={showPassword} />
-                </button>
+                {touched.email && !errors.email && form.email && <FieldCheck />}
+                {touched.email && errors.email && <span className="field-error">{errors.email}</span>}
               </div>
-              {touched.password && errors.password && <span className="field-error">{errors.password}</span>}
+
+              <div className="field-group">
+                <label className="field-label" htmlFor="login-password">Password</label>
+                <div className="password-wrap">
+                  <input
+                    id="login-password"
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete="current-password"
+                    className={`field-input ${touched.password && errors.password ? 'has-error' : ''}`}
+                    placeholder="••••••••"
+                    value={form.password}
+                    onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+                    onBlur={() => handleBlur('password')}
+                  />
+                  <button
+                    type="button"
+                    className="pw-toggle-btn"
+                    id="login-pw-toggle-btn"
+                    onClick={() => setShowPassword(s => !s)}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    <EyeIcon off={showPassword} />
+                  </button>
+                </div>
+                {touched.password && errors.password && <span className="field-error">{errors.password}</span>}
+              </div>
+
+              <div className="auth-row">
+                <label className="remember-check">
+                  <input
+                    type="checkbox"
+                    checked={remember}
+                    onChange={e => setRemember(e.target.checked)}
+                  />
+                  <span>Remember me</span>
+                </label>
+                <a href="#forgot" className="forgot-link" id="forgot-password-link">Forgot password?</a>
+              </div>
+
+              <button
+                type="submit"
+                className="btn-primary auth-submit-btn"
+                id="login-submit-btn"
+                disabled={!form.email || !form.password || status === 'loading'}
+              >
+                {status === 'loading' ? (
+                  <span className="btn-spinner" aria-hidden="true" />
+                ) : (
+                  <>
+                    Sign In
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </>
+                )}
+              </button>
+            </form>
+
+            <div className="auth-switch">
+              Don&apos;t have an account? <Link to="/register" id="go-register-link">Create one</Link>
             </div>
-
-            <div className="auth-row">
-              <label className="remember-check">
-                <input
-                  type="checkbox"
-                  checked={remember}
-                  onChange={e => setRemember(e.target.checked)}
-                />
-                <span>Remember me</span>
-              </label>
-              <a href="#forgot" className="forgot-link" id="forgot-password-link">Forgot password?</a>
-            </div>
-
-            <button
-              type="submit"
-              className="btn-primary auth-submit-btn"
-              id="login-submit-btn"
-              disabled={!form.email || !form.password || status === 'loading'}
-            >
-              {status === 'loading' ? (
-                <span className="btn-spinner" aria-hidden="true" />
-              ) : (
-                <>
-                  Sign In
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-                    <path d="M5 12h14M12 5l7 7-7 7" />
-                  </svg>
-                </>
-              )}
-            </button>
-          </form>
-
-          <div className="auth-switch">
-            Don't have an account? <Link to="/register" id="go-register-link">Create one</Link>
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+/* ── Left panel shared component ── */
+function LeftPanel() {
+  return (
+    <div className="auth-left">
+      <div className="auth-left-bg" />
+      <div className="auth-left-grid" />
+      <div className="auth-left-orb auth-left-orb-1" />
+      <div className="auth-left-orb auth-left-orb-2" />
+
+      <div className="auth-left-content">
+        {/* Brand */}
+        <div className="auth-brand">
+          <div className="auth-brand-icon">
+            <FlameIcon size={22} />
+          </div>
+          <span className="auth-brand-name">Gas<span>Go</span> Lanka</span>
+        </div>
+
+        {/* Hero text */}
+        <div className="auth-hero-text">
+          <div className="auth-hero-badge">
+            <span className="pulse-dot" />
+            Live delivery tracking
+          </div>
+
+          <h2 className="auth-hero-heading">
+            Gas delivered<br />
+            to your door,<br />
+            <span className="grad">in minutes.</span>
+          </h2>
+
+          <p className="auth-hero-sub">
+            Sri Lanka&apos;s fastest LP gas ordering platform. Book a cylinder in under 60 seconds and track your delivery live.
+          </p>
+
+          {/* Stats */}
+          <div className="auth-stats">
+            <div className="auth-stat">
+              <div className="auth-stat-val">50<span>K+</span></div>
+              <div className="auth-stat-label">Happy customers</div>
+            </div>
+            <div className="auth-stat">
+              <div className="auth-stat-val">25<span>+</span></div>
+              <div className="auth-stat-label">Districts covered</div>
+            </div>
+            <div className="auth-stat">
+              <div className="auth-stat-val">45<span>m</span></div>
+              <div className="auth-stat-label">Avg. delivery time</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Trust badges */}
+        <div className="auth-trust">
+          <div className="auth-trust-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            Secure payments
+          </div>
+          <div className="auth-trust-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            Licensed by PUCSL
+          </div>
+          <div className="auth-trust-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
+            </svg>
+            24/7 support
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FieldCheck() {
+  return (
+    <span className="field-check" aria-hidden="true">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+        <polyline points="20 6 9 17 4 12" />
+      </svg>
+    </span>
+  );
+}
+
+function FlameIcon({ size = 20 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" aria-hidden="true">
+      <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z" />
+      <path d="M15 9c0-1.5-1.5-3-3-3-1 2-3 3-3 5a3 3 0 0 0 6 0c0-1-.5-1.5-1-2z" fill="rgba(255,255,255,.8)" stroke="none" />
+    </svg>
   );
 }
 
