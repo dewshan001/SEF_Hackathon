@@ -24,29 +24,8 @@ const PORT = process.env.PORT || 5000;
 // Connect to MongoDB
 connectDB();
 
-// ── CORS ──────────────────────────────────────────────────────────────────
-// CLIENT_URLS  = comma-separated list of allowed frontend origins (set in .env)
-// Falls back to localhost:5173 when the variable is missing
-const allowedOrigins = (process.env.CLIENT_URLS || process.env.CLIENT_URL || "http://localhost:5173" || "https://sef-hackathon.vercel.app")
-  .split(",")
-  .map((o) => o.trim())
-  .filter(Boolean);
-
-const corsOptions = {
-  origin: (origin, callback) => {
-    // Allow requests with no origin (curl, Postman, server-to-server)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
-    callback(new Error(`CORS: origin '${origin}' not allowed`));
-  },
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
-
-app.use(cors(corsOptions));
-// Handle preflight (OPTIONS) requests for all routes
-app.options("*", cors(corsOptions));
+// Middleware
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
