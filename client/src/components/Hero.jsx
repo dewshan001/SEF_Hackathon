@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import './Hero.css';
 
 const STATS = [
@@ -9,9 +11,16 @@ const STATS = [
 ];
 
 export default function Hero() {
+  const { isAuthenticated, role } = useAuth();
   const [mouse, setMouse]   = useState({ x: 0, y: 0 });
   const [scrollY, setScrollY] = useState(0);
   const heroRef = useRef(null);
+
+  const dashboardUrl = isAuthenticated
+    ? (role === 'CUSTOMER' ? '/customer' : role === 'SHOP_OWNER' ? '/shop-owner' : '/admin')
+    : '/admin';
+
+  const dashboardLabel = role === 'ADMIN' || !isAuthenticated ? 'Admin Dashboard' : 'Dashboard';
 
   useEffect(() => {
     const onMouse = (e) => {
@@ -77,6 +86,15 @@ export default function Hero() {
               </svg>
               Book a Cylinder
             </a>
+            <Link to={dashboardUrl} className="btn-secondary hero-dashboard-btn" id="hero-dashboard-btn">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="14" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+              </svg>
+              {dashboardLabel}
+            </Link>
             <a href="#how-it-works" className="btn-secondary" id="hero-learn-btn">
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>

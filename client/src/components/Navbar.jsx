@@ -6,6 +6,7 @@ import './Navbar.css';
 const ROLE_DASHBOARD = {
   CUSTOMER: '/customer',
   SHOP_OWNER: '/shop-owner',
+  ADMIN: '/admin',
 };
 
 export default function Navbar({ theme, onToggleTheme }) {
