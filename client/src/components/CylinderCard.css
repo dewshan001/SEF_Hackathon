@@ -1,0 +1,111 @@
+.cyl-card {
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  transition: transform var(--dur-base) var(--ease-spring), box-shadow var(--dur-base);
+}
+
+.cyl-card--unavailable {
+  opacity: 0.6;
+}
+
+.cyl-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cyl-gas-type {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--brand-amber);
+  background: rgba(245, 166, 35, 0.12);
+  padding: 3px 10px;
+  border-radius: var(--r-pill);
+  border: 1px solid rgba(245, 166, 35, 0.3);
+}
+
+.cyl-low-stock-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #F97316;
+  background: rgba(249, 115, 22, 0.12);
+  padding: 3px 8px;
+  border-radius: var(--r-pill);
+  border: 1px solid rgba(249, 115, 22, 0.3);
+}
+
+.cyl-size-display {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  font-weight: 900;
+  letter-spacing: -1px;
+  background: linear-gradient(130deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+
+.cyl-detail-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8125rem;
+}
+
+.cyl-label { color: var(--text-muted); }
+.cyl-value { color: var(--text-secondary); font-weight: 600; }
+
+.cyl-price {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 800;
+  background: linear-gradient(130deg, var(--brand-amber), var(--brand-primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cyl-qty-badge {
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  font-size: 0.75rem;
+  font-weight: 600;
+  width: fit-content;
+}
+
+.qty-available {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22C55E;
+  border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.qty-out {
+  background: rgba(239, 68, 68, 0.1);
+  color: #EF4444;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.cyl-description {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-top: auto;
+}
+
+.cyl-add-btn {
+  width: 100%;
+  justify-content: center;
+  margin-top: auto;
+}
+
+.cyl-add-btn--in-cart {
+  background: linear-gradient(135deg, var(--brand-green), var(--brand-green-lt)) !important;
+}

@@ -1,18 +1,26 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
 const ROLE_DASHBOARD = {
-  CUSTOMER: '/customer',
-  SHOP_OWNER: '/shop-owner',
+  CUSTOMER: '/customer/dashboard',
+  SHOP_OWNER: '/owner/dashboard',
+  ADMIN: '/admin/dashboard',
 };
+
+const NAV_LINKS = [
+  { label: 'Features',      href: '#features'     },
+  { label: 'How It Works',  href: '#how-it-works' },
+  { label: 'Book Now',      href: '#book'         },
+];
 
 export default function Navbar({ theme, onToggleTheme }) {
   const navRef   = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const { isAuthenticated, user, role, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     logout();
@@ -28,8 +36,19 @@ export default function Navbar({ theme, onToggleTheme }) {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Close menu on link click
-  const handleNavClick = () => setMenuOpen(false);
+  const handleNavClick = (e, href) => {
+    setMenuOpen(false);
+    if (location.pathname === '/') {
+      e.preventDefault();
+      const el = document.querySelector(href);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      e.preventDefault();
+      navigate('/' + href);
+    }
+  };
 
   const isDark = theme === 'dark';
 
@@ -38,7 +57,7 @@ export default function Navbar({ theme, onToggleTheme }) {
       <div className="nav-inner container">
 
         {/* ── Logo ── */}
-        <Link to="/" className="nav-logo" aria-label="GasGo Lanka home">
+        <Link to="/" className="nav-logo" aria-label="GasGo Lanka home" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           <div className="logo-mark" aria-hidden="true">
             <svg width="24" height="24" viewBox="0 0 32 38" fill="none" xmlns="http://www.w3.org/2000/svg">
               <ellipse cx="16" cy="30" rx="10" ry="4"  fill="url(#nl-bot)" />
@@ -70,16 +89,18 @@ export default function Navbar({ theme, onToggleTheme }) {
           </span>
         </Link>
 
-        {/* ── Desktop Links ── */}
+        {/* ── Desktop Links (Scenario specific) ── */}
         <ul className={`nav-links ${menuOpen ? 'is-open' : ''}`} role="list">
-          {[
-            { label: 'Features',      href: '#features'      },
-            { label: 'How It Works',  href: '#how-it-works'  },
-            { label: 'Stores',        href: '#stores'        },
-            { label: 'Book Now',      href: '#book'          },
-          ].map(({ label, href }) => (
+          {NAV_LINKS.map(({ label, href }) => (
             <li key={label}>
-              <a href={href} className="nav-link" onClick={handleNavClick}>{label}</a>
+              <a
+                href={href}
+                className="nav-link"
+                id={`nav-link-${label.toLowerCase().replace(/\s+/g, '-')}`}
+                onClick={(e) => handleNavClick(e, href)}
+              >
+                {label}
+              </a>
             </li>
           ))}
         </ul>
@@ -127,7 +148,14 @@ export default function Navbar({ theme, onToggleTheme }) {
           ) : (
             <>
               <Link to="/login" className="btn-secondary nav-btn" id="nav-signin-btn">Sign In</Link>
-              <a href="#book" className="btn-primary  nav-btn" id="nav-book-btn">Book Now</a>
+              <a
+                href="#book"
+                className="btn-primary nav-btn"
+                id="nav-book-btn"
+                onClick={(e) => handleNavClick(e, '#book')}
+              >
+                Book Now
+              </a>
             </>
           )}
         </div>

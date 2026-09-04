@@ -12,8 +12,9 @@ import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import shopRoutes from "./routes/shopRoutes.js";
-import stockRoutes from "./routes/stockRoutes.js";
+import cylinderRoutes from "./routes/cylinderRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 
 dotenv.config();
 
@@ -32,8 +33,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/shops", shopRoutes);
-app.use("/api/stocks", stockRoutes);
+app.use("/api/cylinders", cylinderRoutes);
+app.use("/api/stocks", cylinderRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/admin", adminRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {
