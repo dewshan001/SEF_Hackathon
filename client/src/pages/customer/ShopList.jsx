@@ -98,7 +98,7 @@ export default function ShopList() {
                 >
                   View Cylinders
                 </button>
-                <MapButton lat={lat} lng={lng} label="Map" />
+                <MapButton lat={lat} lng={lng} address={shop.address || shop.shopName} label="Map" />
               </div>
             </div>
           );

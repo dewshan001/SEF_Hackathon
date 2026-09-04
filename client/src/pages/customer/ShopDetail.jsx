@@ -49,7 +49,7 @@ export default function ShopDetail() {
               📞 {shop.contactNumber}
             </p>}
             <div style={{ marginTop: 'var(--space-4)', display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
-              <MapButton lat={lat} lng={lng} />
+              <MapButton lat={lat} lng={lng} address={shop.address || shop.shopName} label="View on Google Maps" />
               {totalItems > 0 && (
                 <Link to="/customer/cart" className="btn-primary" style={{ fontSize: '0.875rem', padding: '10px 20px' }}>
                   🛒 View Cart ({totalItems})

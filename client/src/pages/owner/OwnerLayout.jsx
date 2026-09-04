@@ -6,6 +6,7 @@ const NAV_LINKS = [
   { to: '/owner/dashboard', icon: '📊', label: 'Dashboard' },
   { to: '/owner/cylinders', icon: '⛽', label: 'Manage Cylinders' },
   { to: '/owner/orders', icon: '📋', label: 'Orders' },
+  { to: '/owner/feedbacks', icon: '💬', label: 'Feedbacks' },
   { to: '/owner/shop', icon: '🏪', label: 'My Shop' },
 ];
 

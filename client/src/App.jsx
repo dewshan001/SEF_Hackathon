@@ -29,6 +29,7 @@ import OwnerDashboardHome from './pages/owner/OwnerDashboardHome';
 import ManageCylinders from './pages/owner/ManageCylinders';
 import ManageOrders from './pages/owner/ManageOrders';
 import ManageShop from './pages/owner/ManageShop';
+import OwnerFeedbacks from './pages/owner/OwnerFeedbacks';
 
 // Admin pages
 import AdminLayout from './pages/admin/AdminLayout';
@@ -141,6 +142,7 @@ function App() {
                   <Route path="dashboard" element={<OwnerDashboardHome />} />
                   <Route path="cylinders" element={<ManageCylinders />} />
                   <Route path="orders" element={<ManageOrders />} />
+                  <Route path="feedbacks" element={<OwnerFeedbacks />} />
                   <Route path="shop" element={<ManageShop />} />
                   <Route path="*" element={<Navigate to="/owner/dashboard" replace />} />
                 </Routes>

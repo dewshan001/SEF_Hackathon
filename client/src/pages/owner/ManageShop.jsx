@@ -148,6 +148,30 @@ export default function ManageShop() {
                 <input id="shop-lng-input" type="number" step="any" className="field-input" value={lng} onChange={e => setLng(e.target.value)} placeholder="e.g. 79.8612" />
               </div>
             </div>
+
+            <div>
+              <button
+                type="button"
+                className="btn-secondary"
+                style={{ fontSize: '0.8rem', padding: '6px 12px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                onClick={() => {
+                  if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                      (pos) => {
+                        setLat(pos.coords.latitude.toFixed(6));
+                        setLng(pos.coords.longitude.toFixed(6));
+                        setSuccess('Location updated from device GPS!');
+                      },
+                      () => setError('Unable to retrieve GPS location. Please allow browser location access.')
+                    );
+                  } else {
+                    setError('Geolocation is not supported by your browser.');
+                  }
+                }}
+              >
+                📍 Use Current GPS Location
+              </button>
+            </div>
             {error && <div style={{ color: 'var(--color-error)', fontSize: '0.875rem', padding: 'var(--space-3)', background: 'rgba(239,68,68,0.08)', borderRadius: 'var(--r-md)', border: '1px solid rgba(239,68,68,0.2)' }}>{error}</div>}
             <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
               <button type="submit" className="btn-primary" id="save-shop-btn" disabled={submitting || !shopName || !contactNumber}>

@@ -58,6 +58,7 @@ export default function OwnerDashboardHome() {
       <div style={{ display: 'flex', gap: 'var(--space-4)', flexWrap: 'wrap' }}>
         <a href="/owner/cylinders" className="btn-primary">⛽ Manage Cylinders</a>
         <a href="/owner/orders" className="btn-secondary">📋 View Orders</a>
+        <a href="/owner/feedbacks" className="btn-secondary">💬 Customer Reviews</a>
         <a href="/owner/shop" className="btn-secondary">🏪 Edit Shop</a>
       </div>
     </div>

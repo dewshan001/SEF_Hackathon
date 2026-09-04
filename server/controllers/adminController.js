@@ -1,7 +1,66 @@
+import mongoose from "mongoose";
 import User from "../models/userModel.js";
 import Shop from "../models/shopModel.js";
 import Cylinder from "../models/cylinderModel.js";
 import Order from "../models/orderModel.js";
+
+// ── @desc  Get admin dashboard statistics (legacy & unified)
+// ── @route GET /api/admin/stats
+export const getAdminStats = async (req, res) => {
+  try {
+    const [customerCount, ownerCount, orderCount, totalShops, totalCylinders] = await Promise.all([
+      User.countDocuments({ role: "CUSTOMER" }),
+      User.countDocuments({ role: "SHOP_OWNER" }),
+      Order.countDocuments(),
+      Shop.countDocuments(),
+      Cylinder.countDocuments(),
+    ]);
+
+    const deliveredCount = await Order.countDocuments({ status: "collected" });
+
+    const ordersByStatus = await Order.aggregate([
+      { $group: { _id: "$status", count: { $sum: 1 } } },
+    ]);
+    const statusCounts = ordersByStatus.reduce((acc, s) => {
+      acc[s._id] = s.count;
+      return acc;
+    }, {});
+
+    res.json({
+      customers: customerCount,
+      owners: ownerCount,
+      orders: orderCount,
+      deliveredOrders: deliveredCount,
+      totalCustomers: customerCount,
+      totalOwners: ownerCount,
+      totalShops,
+      totalCylinders,
+      totalOrders: orderCount,
+      ordersByStatus: statusCounts,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// ── @desc  Get database connection status
+// ── @route GET /api/admin/db-status
+export const getDbStatus = async (req, res) => {
+  try {
+    const state = mongoose.connection.readyState;
+    const isConnected = state === 1;
+
+    res.json({
+      connected: isConnected,
+      status: isConnected ? "connected" : "disconnected",
+      state: state,
+      host: mongoose.connection.host || "cluster0.t9wmrpz.mongodb.net",
+      name: mongoose.connection.name || "gasgo-lanka",
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 // ── @desc  Get all users
 // ── @route GET /api/admin/users
@@ -78,35 +137,5 @@ export const getAllOrders = async (req, res) => {
 
 // ── @desc  Get system statistics
 // ── @route GET /api/admin/stats
-export const getStats = async (req, res) => {
-  try {
-    const [totalCustomers, totalOwners, totalShops, totalCylinders, totalOrders] =
-      await Promise.all([
-        User.countDocuments({ role: "CUSTOMER" }),
-        User.countDocuments({ role: "SHOP_OWNER" }),
-        Shop.countDocuments(),
-        Cylinder.countDocuments(),
-        Order.countDocuments(),
-      ]);
+export const getStats = getAdminStats;
 
-    const ordersByStatus = await Order.aggregate([
-      { $group: { _id: "$status", count: { $sum: 1 } } },
-    ]);
-
-    const statusCounts = ordersByStatus.reduce((acc, s) => {
-      acc[s._id] = s.count;
-      return acc;
-    }, {});
-
-    res.json({
-      totalCustomers,
-      totalOwners,
-      totalShops,
-      totalCylinders,
-      totalOrders,
-      ordersByStatus: statusCounts,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};

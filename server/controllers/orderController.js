@@ -100,33 +100,39 @@ export const createOrder = async (req, res) => {
       .populate("shopId", "shopName address contactNumber location")
       .populate("customerId", "name email phone");
 
-    // Send emails (non-blocking — errors don't cancel the order)
+    // Send emails (non-blocking for HTTP response)
     try {
       const shopOwner = await User.findById(shop.ownerId);
-      const customerEmail = orderConfirmationEmail({
-        token,
-        shopName: shop.shopName,
-        shopAddress: shop.address,
-        shopPhone: shop.contactNumber,
-        items: orderItems,
-        totalAmount,
-        status: "pending",
-        customerName: req.user.name,
-      });
-      sendEmail({ to: req.user.email, ...customerEmail });
+      const emailPromises = [];
+
+      if (req.user?.email) {
+        const customerEmail = orderConfirmationEmail({
+          token,
+          shopName: shop.shopName,
+          shopAddress: shop.address,
+          shopPhone: shop.contactNumber,
+          items: orderItems,
+          totalAmount,
+          status: "pending",
+          customerName: req.user.name || "Customer",
+        });
+        emailPromises.push(sendEmail({ to: req.user.email, ...customerEmail }));
+      }
 
       if (shopOwner && shopOwner.email) {
         const ownerEmail = newOrderAlertEmail({
           token,
-          customerName: req.user.name,
+          customerName: req.user.name || "Customer",
           customerEmail: req.user.email,
           customerPhone: req.user.phone,
           items: orderItems,
           totalAmount,
           shopName: shop.shopName,
         });
-        sendEmail({ to: shopOwner.email, ...ownerEmail });
+        emailPromises.push(sendEmail({ to: shopOwner.email, ...ownerEmail }));
       }
+
+      await Promise.allSettled(emailPromises);
     } catch (emailErr) {
       console.error("Email error (non-fatal):", emailErr.message);
     }
