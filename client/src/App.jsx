@@ -36,7 +36,6 @@ import OwnerFeedbacks from './pages/owner/OwnerFeedbacks';
 
 // Admin pages
 import AdminLayout from './pages/admin/AdminLayout';
-import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminShops from './pages/admin/AdminShops';
 import AdminOrders from './pages/admin/AdminOrders';
@@ -116,22 +115,6 @@ function App() {
         <Route path="/shop-owner" element={<Navigate to="/owner/dashboard" replace />} />
 
         {/* ── Customer Routes ─────────────────────────────────────────────── */}
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute role="ADMIN">
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/*"
-          element={
-            <ProtectedRoute role="ADMIN">
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
         <Route
           path="/customer/*"
           element={
