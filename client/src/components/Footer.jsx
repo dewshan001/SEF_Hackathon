@@ -1,6 +1,13 @@
 import './Footer.css';
 
-export default function Footer() {
+export default function Footer({ onNavigate }) {
+  const handleLinkClick = (pageId, e) => {
+    if (pageId && onNavigate) {
+      e.preventDefault();
+      onNavigate(pageId);
+    }
+  };
+
   return (
     <footer className="footer" id="footer">
       <div className="footer-glow" aria-hidden="true" />
@@ -31,8 +38,8 @@ export default function Footer() {
             <span className="footer-logo-text">GasGo <span className="logo-accent">Lanka</span></span>
           </div>
           <p className="footer-tagline">
-            Sri Lanka's fastest and most trusted LP gas cylinder booking platform.
-            Safe, certified, and always on time.
+            Sri Lanka's most trusted LP gas cylinder stock platform.
+            Safe, certified, and hassle-free.
           </p>
           <div className="footer-socials">
             {[
@@ -65,45 +72,25 @@ export default function Footer() {
         <div className="footer-links-group">
           <h4 className="footer-heading">Platform</h4>
           <ul>
-            {['Find Stores', 'Book Cylinder', 'Track Order', 'Pricing', 'Commercial Plans'].map(l => (
-              <li key={l}><a href="#" className="footer-link">{l}</a></li>
-            ))}
+            <li><a href="#stores" className="footer-link" onClick={(e) => handleLinkClick('stores', e)}>Find Stores</a></li>
+            <li><a href="#about" className="footer-link" onClick={(e) => handleLinkClick('about', e)}>About Us</a></li>
           </ul>
         </div>
 
         <div className="footer-links-group">
           <h4 className="footer-heading">Company</h4>
           <ul>
-            {['About Us', 'Careers', 'Press', 'Blog', 'Contact'].map(l => (
-              <li key={l}><a href="#" className="footer-link">{l}</a></li>
-            ))}
+            <li><a href="#about" className="footer-link" onClick={(e) => handleLinkClick('about', e)}>Our Mission</a></li>
+            <li><a href="#" className="footer-link" onClick={(e) => handleLinkClick('home', e)}>Home</a></li>
           </ul>
         </div>
 
         <div className="footer-links-group">
           <h4 className="footer-heading">Support</h4>
           <ul>
-            {['Help Center', 'Safety Guidelines', 'Terms of Service', 'Privacy Policy', 'Refund Policy'].map(l => (
-              <li key={l}><a href="#" className="footer-link">{l}</a></li>
-            ))}
+            <li><a href="#about" className="footer-link" onClick={(e) => handleLinkClick('about', e)}>Safety Guidelines</a></li>
+            <li><a href="#about" className="footer-link" onClick={(e) => handleLinkClick('about', e)}>Help Center</a></li>
           </ul>
-          <div className="app-download">
-            <h4 className="footer-heading" style={{ marginTop: '28px' }}>Get the App</h4>
-            <div className="app-btns">
-              <a href="#" className="app-btn" id="footer-appstore-btn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-                </svg>
-                App Store
-              </a>
-              <a href="#" className="app-btn" id="footer-playstore-btn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-1.303l2.302 2.302a1 1 0 0 1 0 1.587l-2.302 2.302-2.302-2.302 2.302-2.302zm-13.19-8.9L16.441 8.84l-2.302 2.302-8.635-8.636z"/>
-                </svg>
-                Google Play
-              </a>
-            </div>
-          </div>
         </div>
       </div>
 

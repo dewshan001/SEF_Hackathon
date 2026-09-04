@@ -1,0 +1,80 @@
+/* ===================================================
+   3D Gas Cylinder Canvas & Stage
+   =================================================== */
+.gas-3d-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+.gas-3d-canvas-container {
+  width: 100%;
+  height: clamp(380px, 48vh, 480px);
+  cursor: grab;
+  position: relative;
+  user-select: none;
+  touch-action: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gas-3d-canvas-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  outline: none;
+  filter: drop-shadow(0 20px 35px rgba(232, 93, 26, 0.28));
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gas-3d-canvas-container:active,
+.gas-3d-canvas-container.is-interacting {
+  cursor: grabbing;
+}
+
+.gas-3d-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-sm);
+  margin-top: 8px;
+  pointer-events: none;
+  animation: fade-in 1s 0.8s ease both;
+  transition: all var(--dur-normal);
+}
+
+.gas-3d-hint svg {
+  color: var(--brand-primary);
+  animation: spin-subtle 4s linear infinite;
+}
+
+@keyframes spin-subtle {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 900px) {
+  .gas-3d-canvas-container {
+    height: clamp(320px, 44vh, 400px);
+  }
+}
+
+@media (max-width: 540px) {
+  .gas-3d-canvas-container {
+    height: 300px;
+  }
+}

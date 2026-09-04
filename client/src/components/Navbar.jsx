@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import './Navbar.css';
 
-export default function Navbar({ theme, onToggleTheme }) {
-  const navRef   = useRef(null);
+export default function Navbar({ theme, onToggleTheme, currentPage = 'home', onNavigate }) {
+  const navRef = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -13,8 +13,13 @@ export default function Navbar({ theme, onToggleTheme }) {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Close menu on link click
-  const handleNavClick = () => setMenuOpen(false);
+  const handleNavClick = (pageId, e) => {
+    e.preventDefault();
+    setMenuOpen(false);
+    if (onNavigate) {
+      onNavigate(pageId);
+    }
+  };
 
   const isDark = theme === 'dark';
 
@@ -23,28 +28,33 @@ export default function Navbar({ theme, onToggleTheme }) {
       <div className="nav-inner container">
 
         {/* ── Logo ── */}
-        <a href="#" className="nav-logo" aria-label="GasGo Lanka home">
+        <a
+          href="#"
+          className="nav-logo"
+          aria-label="GasGo Lanka home"
+          onClick={(e) => handleNavClick('home', e)}
+        >
           <div className="logo-mark" aria-hidden="true">
             <svg width="24" height="24" viewBox="0 0 32 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <ellipse cx="16" cy="30" rx="10" ry="4"  fill="url(#nl-bot)" />
-              <rect   x="6"  y="10" width="20" height="20" rx="9" fill="url(#nl-body)" />
-              <ellipse cx="16" cy="10" rx="10" ry="4"  fill="url(#nl-top)" />
-              <rect   x="12" y="5"  width="8"  height="7"  rx="3" fill="url(#nl-valve)" />
-              <rect   x="11" y="2"  width="10" height="5"  rx="2" fill="url(#nl-handle)" />
+              <ellipse cx="16" cy="30" rx="10" ry="4" fill="url(#nl-bot)" />
+              <rect x="6" y="10" width="20" height="20" rx="9" fill="url(#nl-body)" />
+              <ellipse cx="16" cy="10" rx="10" ry="4" fill="url(#nl-top)" />
+              <rect x="12" y="5" width="8" height="7" rx="3" fill="url(#nl-valve)" />
+              <rect x="11" y="2" width="10" height="5" rx="2" fill="url(#nl-handle)" />
               <defs>
-                <linearGradient id="nl-body"   x1="6" y1="10" x2="26" y2="30" gradientUnits="userSpaceOnUse">
+                <linearGradient id="nl-body" x1="6" y1="10" x2="26" y2="30" gradientUnits="userSpaceOnUse">
                   <stop stopColor="#F2752E"/><stop offset="1" stopColor="#C0392B"/>
                 </linearGradient>
-                <linearGradient id="nl-top"    x1="6" y1="6"  x2="26" y2="14" gradientUnits="userSpaceOnUse">
+                <linearGradient id="nl-top" x1="6" y1="6" x2="26" y2="14" gradientUnits="userSpaceOnUse">
                   <stop stopColor="#F9CC1B"/><stop offset="1" stopColor="#F5A623"/>
                 </linearGradient>
-                <linearGradient id="nl-bot"    x1="6" y1="26" x2="26" y2="34" gradientUnits="userSpaceOnUse">
+                <linearGradient id="nl-bot" x1="6" y1="26" x2="26" y2="34" gradientUnits="userSpaceOnUse">
                   <stop stopColor="#E85D1A"/><stop offset="1" stopColor="#C0392B"/>
                 </linearGradient>
-                <linearGradient id="nl-valve"  x1="12" y1="5"  x2="20" y2="12" gradientUnits="userSpaceOnUse">
+                <linearGradient id="nl-valve" x1="12" y1="5" x2="20" y2="12" gradientUnits="userSpaceOnUse">
                   <stop stopColor="#E0E0E0"/><stop offset="1" stopColor="#9E9E9E"/>
                 </linearGradient>
-                <linearGradient id="nl-handle" x1="11" y1="2"  x2="21" y2="7"  gradientUnits="userSpaceOnUse">
+                <linearGradient id="nl-handle" x1="11" y1="2" x2="21" y2="7" gradientUnits="userSpaceOnUse">
                   <stop stopColor="#BDBDBD"/><stop offset="1" stopColor="#757575"/>
                 </linearGradient>
               </defs>
@@ -55,21 +65,26 @@ export default function Navbar({ theme, onToggleTheme }) {
           </span>
         </a>
 
-        {/* ── Desktop Links ── */}
+        {/* ── Navigation Links (Home, Stores, About) ── */}
         <ul className={`nav-links ${menuOpen ? 'is-open' : ''}`} role="list">
           {[
-            { label: 'Features',      href: '#features'      },
-            { label: 'How It Works',  href: '#how-it-works'  },
-            { label: 'Stores',        href: '#stores'        },
-            { label: 'Book Now',      href: '#book'          },
-          ].map(({ label, href }) => (
-            <li key={label}>
-              <a href={href} className="nav-link" onClick={handleNavClick}>{label}</a>
+            { id: 'home',   label: 'Home'   },
+            { id: 'stores', label: 'Stores' },
+            { id: 'about',  label: 'About'  },
+          ].map(({ id, label }) => (
+            <li key={id}>
+              <a
+                href={`#${id}`}
+                className={`nav-link ${currentPage === id ? 'active' : ''}`}
+                onClick={(e) => handleNavClick(id, e)}
+              >
+                {label}
+              </a>
             </li>
           ))}
         </ul>
 
-        {/* ── Actions ── */}
+        {/* ── Actions (Theme Toggle & Sign In) ── */}
         <div className="nav-actions">
           {/* Theme toggle */}
           <button
@@ -100,8 +115,7 @@ export default function Navbar({ theme, onToggleTheme }) {
             )}
           </button>
 
-          <a href="#book" className="btn-secondary nav-btn" id="nav-signin-btn">Sign In</a>
-          <a href="#book" className="btn-primary  nav-btn" id="nav-book-btn">Book Now</a>
+          <a href="#signin" className="btn-secondary nav-btn" id="nav-signin-btn">Sign In</a>
         </div>
 
         {/* ── Hamburger ── */}
