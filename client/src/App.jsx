@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import './App.css';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -8,6 +9,24 @@ import BookingForm from './components/BookingForm';
 import Testimonials from './components/Testimonials';
 import CTABanner from './components/CTABanner';
 import Footer from './components/Footer';
+import Login from './pages/Login';
+import Register from './pages/Register';
+
+function Landing() {
+  return (
+    <>
+      <main>
+        <Hero />
+        <Features />
+        <HowItWorks />
+        <BookingForm />
+        <Testimonials />
+        <CTABanner />
+      </main>
+      <Footer />
+    </>
+  );
+}
 
 function App() {
   const [theme, setTheme] = useState(() => {
@@ -26,15 +45,11 @@ function App() {
   return (
     <div className="app">
       <Navbar theme={theme} onToggleTheme={toggleTheme} />
-      <main>
-        <Hero />
-        <Features />
-        <HowItWorks />
-        <BookingForm />
-        <Testimonials />
-        <CTABanner />
-      </main>
-      <Footer />
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Routes>
     </div>
   );
 }
