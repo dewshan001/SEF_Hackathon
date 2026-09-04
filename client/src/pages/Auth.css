@@ -4,12 +4,14 @@
 
 /* ── Page shell ── */
 .auth-page {
-  min-height: 100svh;
+  height: 100svh;
+  max-height: 100svh;
   display: flex;
   align-items: stretch;
   background: var(--bg-base);
   overflow: hidden;
-  position: relative;
+  position: fixed;
+  inset: 0;
 }
 
 /* ===================================================
@@ -21,6 +23,7 @@
   flex: 0 0 46%;
   overflow: hidden;
   background: #070B17;
+  height: 100%;
 }
 
 @media (min-width: 900px) {
@@ -231,7 +234,8 @@
   justify-content: center;
   padding: 32px 24px;
   position: relative;
-  overflow-y: auto;
+  overflow: hidden;
+  height: 100%;
   background: var(--bg-base);
 }
 
@@ -245,11 +249,53 @@
   pointer-events: none;
 }
 
+/* ── Back to Home button ── */
+.auth-back-home {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  background: var(--glass-bg);
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: .78rem;
+  font-weight: 600;
+  text-decoration: none;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition:
+    color var(--dur-fast),
+    background var(--dur-fast),
+    border-color var(--dur-fast),
+    transform var(--dur-base) var(--ease-spring);
+}
+
+.auth-back-home:hover {
+  color: var(--text-primary);
+  background: var(--glass-bg-hover);
+  border-color: var(--brand-primary);
+  transform: translateX(-3px);
+}
+
+.auth-back-home svg {
+  transition: transform var(--dur-base) var(--ease-spring);
+}
+
+.auth-back-home:hover svg {
+  transform: translateX(-2px);
+}
+
 .auth-shell {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 420px;
+  max-width: 460px;
   animation: auth-fade-up .55s var(--ease-spring) both;
 }
 
@@ -291,32 +337,16 @@
   color: var(--brand-amber);
 }
 
-/* ── Card ── */
+/* ── Card — no card box, form sits directly on page ── */
 .auth-card {
   width: 100%;
-  padding: 36px 36px 32px;
-  border-radius: 24px;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  box-shadow: 0 24px 64px rgba(0,0,0,.18), 0 0 0 1px rgba(255,255,255,.04);
-  transition: background var(--dur-slow), border-color var(--dur-slow);
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   position: relative;
-}
-
-.auth-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 20%; right: 20%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(232,93,26,.5), var(--brand-amber), rgba(232,93,26,.5), transparent);
-  border-radius: 1px;
-  pointer-events: none;
-}
-
-@media (max-width: 540px) {
-  .auth-card { padding: 28px 20px 24px; border-radius: 20px; }
 }
 
 /* ── Eyebrow badge ── */
@@ -333,7 +363,7 @@
   color: var(--brand-amber);
   letter-spacing: .08em;
   text-transform: uppercase;
-  margin-bottom: 18px;
+  margin-bottom: 12px;
 }
 
 .auth-eyebrow-dot {
@@ -358,8 +388,8 @@
 .auth-subtitle {
   font-size: .85rem;
   color: var(--text-secondary);
-  line-height: 1.6;
-  margin-bottom: 28px;
+  line-height: 1.5;
+  margin-bottom: 18px;
   transition: color var(--dur-slow);
 }
 
@@ -371,7 +401,7 @@
   display: flex;
   align-items: flex-start;
   gap: 0;
-  margin-bottom: 28px;
+  margin-bottom: 18px;
   position: relative;
 }
 
@@ -442,10 +472,10 @@
 
 .form-step-title {
   font-family: var(--font-display);
-  font-size: .98rem;
+  font-size: .95rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 18px;
+  margin-bottom: 12px;
   transition: color var(--dur-slow);
 }
 
@@ -462,7 +492,7 @@
 
 /* ── Fields ── */
 .field-group {
-  margin-bottom: 18px;
+  margin-bottom: 12px;
   position: relative;
 }
 
@@ -480,13 +510,13 @@
 
 .field-input {
   width: 100%;
-  padding: 12px 16px;
+  padding: 10px 14px;
   background: var(--bg-elevated);
   border: 1.5px solid var(--border-default);
   border-radius: 12px;
   color: var(--text-primary);
   font-family: var(--font-body);
-  font-size: .9rem;
+  font-size: .88rem;
   outline: none;
   transition:
     border-color var(--dur-fast),
@@ -599,7 +629,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   flex-wrap: wrap;
   gap: 8px;
 }
@@ -638,8 +668,8 @@
   gap: 10px;
   font-size: .8rem;
   color: var(--text-secondary);
-  line-height: 1.55;
-  margin-bottom: 20px;
+  line-height: 1.5;
+  margin-bottom: 14px;
   cursor: pointer;
   user-select: none;
 }
@@ -656,9 +686,9 @@
 .auth-submit-btn {
   width: 100%;
   justify-content: center;
-  margin-top: 4px;
-  padding: 14px 24px;
-  font-size: .95rem;
+  margin-top: 2px;
+  padding: 12px 24px;
+  font-size: .92rem;
 }
 .auth-submit-btn:disabled { opacity: .45; cursor: not-allowed; transform: none !important; }
 
@@ -676,7 +706,7 @@
 /* ── Switch link ── */
 .auth-switch {
   text-align: center;
-  margin-top: 22px;
+  margin-top: 16px;
   font-size: .85rem;
   color: var(--text-secondary);
   transition: color var(--dur-slow);
@@ -710,7 +740,7 @@
 /* ── Success state ── */
 .auth-success {
   text-align: center;
-  padding: 48px 32px;
+  padding: 24px 0;
 }
 
 .success-icon {
