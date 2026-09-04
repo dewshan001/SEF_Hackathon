@@ -259,29 +259,7 @@ export default function Feedback({ onNavigateHome }) {
             {/* Form Column */}
             <div className="feedback-form-container glass-card">
               <form onSubmit={handleSubmit} className="feedback-form" noValidate>
-                {/* 1. Category Selection */}
-                <div className="form-group">
-                  <label className="form-label">
-                    What is your feedback about? <span className="req">*</span>
-                  </label>
-                  <div className="category-chips" role="radiogroup" aria-label="Feedback Category">
-                    {FEEDBACK_CATEGORIES.map(cat => (
-                      <button
-                        key={cat.id}
-                        type="button"
-                        className={`chip-btn ${category === cat.id ? 'active' : ''}`}
-                        onClick={() => setCategory(cat.id)}
-                        role="radio"
-                        aria-checked={category === cat.id}
-                      >
-                        <span className="chip-icon">{cat.icon}</span>
-                        <span>{cat.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 2. Overall Star Rating */}
+                {/* 1. Overall Star Rating */}
                 <div className="form-group">
                   <div className="label-with-rating">
                     <label className="form-label">
@@ -312,42 +290,7 @@ export default function Feedback({ onNavigateHome }) {
                   </div>
                 </div>
 
-                {/* 3. Micro Ratings */}
-                <div className="micro-ratings-grid">
-                  <div className="micro-rating-box">
-                    <div className="micro-label">Stock Data Accuracy</div>
-                    <div className="pill-scale" role="radiogroup">
-                      {[1, 2, 3, 4, 5].map(num => (
-                        <button
-                          key={num}
-                          type="button"
-                          className={`pill-scale-btn ${accuracyRating === num ? 'active' : ''}`}
-                          onClick={() => setAccuracyRating(num)}
-                        >
-                          {num}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="micro-rating-box">
-                    <div className="micro-label">Ease of Finding Gas</div>
-                    <div className="pill-scale" role="radiogroup">
-                      {[1, 2, 3, 4, 5].map(num => (
-                        <button
-                          key={num}
-                          type="button"
-                          className={`pill-scale-btn ${easeRating === num ? 'active' : ''}`}
-                          onClick={() => setEaseRating(num)}
-                        >
-                          {num}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* 4. Customer Info Row */}
+                {/* 2. Customer Info Row */}
                 <div className="form-row-2">
                   <div className="form-group">
                     <label htmlFor="customer-name" className="form-label">
