@@ -1,31 +1,52 @@
 import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
 
-// Protect routes - verify JWT token
+// ── protect ────────────────────────────────────────────────────────────────
+// Verifies JWT from Authorization: Bearer <token>
+// Attaches req.user on success
 export const protect = async (req, res, next) => {
   let token;
 
   if (req.headers.authorization?.startsWith("Bearer")) {
-    try {
-      token = req.headers.authorization.split(" ")[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = await User.findById(decoded.id).select("-password");
-      next();
-    } catch (error) {
-      res.status(401).json({ message: "Not authorized, token failed" });
-    }
+    token = req.headers.authorization.split(" ")[1];
   }
 
   if (!token) {
-    res.status(401).json({ message: "Not authorized, no token" });
+    return res.status(401).json({ message: "Not authorized — no token provided" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = await User.findById(decoded.id).select("-password");
+
+    if (!req.user) {
+      return res.status(401).json({ message: "Not authorized — user not found" });
+    }
+
+    next();
+  } catch (error) {
+    return res.status(401).json({ message: "Not authorized — token invalid or expired" });
   }
 };
 
-// Admin only middleware
-export const admin = (req, res, next) => {
-  if (req.user && req.user.role === "admin") {
+// ── authorizeRoles ─────────────────────────────────────────────────────────
+// Usage: authorizeRoles("ADMIN", "SHOP_OWNER")
+export const authorizeRoles = (...roles) => {
+  return (req, res, next) => {
+    if (!req.user || !roles.includes(req.user.role)) {
+      return res.status(403).json({
+        message: `Access denied. Required role(s): ${roles.join(", ")}`,
+      });
+    }
     next();
-  } else {
-    res.status(403).json({ message: "Not authorized as admin" });
-  }
+  };
 };
+
+// ── Convenience aliases ────────────────────────────────────────────────────
+export const adminOnly      = authorizeRoles("ADMIN");
+export const shopOwnerOnly  = authorizeRoles("SHOP_OWNER");
+export const customerOnly   = authorizeRoles("CUSTOMER");
+export const adminOrOwner   = authorizeRoles("ADMIN", "SHOP_OWNER");
+
+// Backwards-compatible alias (old code used: protect, admin)
+export const admin = adminOnly;
