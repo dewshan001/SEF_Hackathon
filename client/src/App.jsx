@@ -75,7 +75,7 @@ function Landing() {
 function RootRoute() {
   const { isAuthenticated, role } = useAuth();
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Landing />;
   }
   if (role === 'SHOP_OWNER') return <Navigate to="/owner/dashboard" replace />;
   if (role === 'ADMIN') return <Navigate to="/admin/dashboard" replace />;
