@@ -27,7 +27,7 @@ connectDB();
 // ── CORS ──────────────────────────────────────────────────────────────────
 // CLIENT_URLS  = comma-separated list of allowed frontend origins (set in .env)
 // Falls back to localhost:5173 when the variable is missing
-const allowedOrigins = (process.env.CLIENT_URLS || process.env.CLIENT_URL || "http://localhost:5173")
+const allowedOrigins = (process.env.CLIENT_URLS || process.env.CLIENT_URL || "http://localhost:5173" || "https://sef-hackathon.vercel.app")
   .split(",")
   .map((o) => o.trim())
   .filter(Boolean);
