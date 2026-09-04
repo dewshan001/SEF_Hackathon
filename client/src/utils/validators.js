@@ -1,11 +1,12 @@
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const SL_PHONE_RE = /^(?:\+94|0)7\d{8}$/;
+const SL_PHONE_RE = /^(?:\+94|0)?(?:7[0-9])\d{7}$|^0\d{9}$/;
 
 export function isValidEmail(value) {
   return EMAIL_RE.test(value.trim());
 }
 
 export function isValidSriLankanPhone(value) {
+  if (!value) return false;
   return SL_PHONE_RE.test(value.trim().replace(/[\s-]/g, ''));
 }
 

@@ -34,6 +34,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Phone number is required"],
       trim: true,
+      set: (v) => (typeof v === "string" ? v.replace(/[\s-]/g, "") : v),
       match: [
         /^(?:\+94|0)?(?:7[0-9])\d{7}$|^0\d{9}$/,
         "Please provide a valid Sri Lankan phone number",
