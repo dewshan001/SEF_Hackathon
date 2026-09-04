@@ -106,6 +106,8 @@ export const createOrder = async (req, res) => {
       const customerEmail = orderConfirmationEmail({
         token,
         shopName: shop.shopName,
+        shopAddress: shop.address,
+        shopPhone: shop.contactNumber,
         items: orderItems,
         totalAmount,
         status: "pending",
@@ -113,13 +115,15 @@ export const createOrder = async (req, res) => {
       });
       sendEmail({ to: req.user.email, ...customerEmail });
 
-      if (shopOwner) {
+      if (shopOwner && shopOwner.email) {
         const ownerEmail = newOrderAlertEmail({
           token,
           customerName: req.user.name,
           customerEmail: req.user.email,
+          customerPhone: req.user.phone,
           items: orderItems,
           totalAmount,
+          shopName: shop.shopName,
         });
         sendEmail({ to: shopOwner.email, ...ownerEmail });
       }

@@ -7,6 +7,13 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
+// Register all Mongoose models
+import "./models/userModel.js";
+import "./models/shopModel.js";
+import "./models/cylinderModel.js";
+import "./models/orderModel.js";
+import "./models/feedbackModel.js";
+import "./models/stockModel.js";
 
 // Route imports
 import authRoutes from "./routes/authRoutes.js";
@@ -15,6 +22,7 @@ import shopRoutes from "./routes/shopRoutes.js";
 import cylinderRoutes from "./routes/cylinderRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import feedbackRoutes from "./routes/feedbackRoutes.js";
 
 dotenv.config();
 
@@ -37,6 +45,7 @@ app.use("/api/cylinders", cylinderRoutes);
 app.use("/api/stocks", cylinderRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/feedbacks", feedbackRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {

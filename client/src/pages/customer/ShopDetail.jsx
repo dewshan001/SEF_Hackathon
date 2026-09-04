@@ -4,6 +4,7 @@ import { getShopById } from '../../api/shops';
 import { getShopCylinders } from '../../api/cylinders';
 import CylinderCard from '../../components/CylinderCard';
 import MapButton from '../../components/MapButton';
+import ShopFeedbackSection from '../../components/ShopFeedbackSection';
 import { useCart } from '../../context/CartContext';
 
 export default function ShopDetail() {
@@ -87,6 +88,9 @@ export default function ShopDetail() {
           ))}
         </div>
       )}
+
+      {/* ── Shop Feedback & Reviews Section ── */}
+      <ShopFeedbackSection shopId={id} />
     </div>
   );
 }

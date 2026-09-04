@@ -12,6 +12,7 @@ import Footer from './components/Footer';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ProtectedRoute from './components/ProtectedRoute';
+import { useAuth } from './context/AuthContext';
 
 // Customer pages
 import CustomerLayout from './pages/customer/CustomerLayout';
@@ -68,6 +69,16 @@ function Landing() {
   );
 }
 
+function RootRoute() {
+  const { isAuthenticated, role } = useAuth();
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  if (role === 'SHOP_OWNER') return <Navigate to="/owner/dashboard" replace />;
+  if (role === 'ADMIN') return <Navigate to="/admin/dashboard" replace />;
+  return <Navigate to="/customer/dashboard" replace />;
+}
+
 function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem('gasgo-theme') || 'dark');
   const location = useLocation();
@@ -85,8 +96,12 @@ function App() {
     <div className="app">
       {!isAuthPage && !isDashPage && <Navbar theme={theme} onToggleTheme={toggleTheme} />}
       <Routes>
-        {/* Landing */}
-        <Route path="/" element={<Landing />} />
+        {/* Root URL -> Login (or role dashboard if authenticated) */}
+        <Route path="/" element={<RootRoute />} />
+
+        {/* Landing Page */}
+        <Route path="/home" element={<Landing />} />
+        <Route path="/landing" element={<Landing />} />
 
         {/* Auth */}
         <Route path="/login" element={<Login />} />

@@ -6,12 +6,14 @@ import {
   createShop,
   updateMyShop,
 } from "../controllers/shopController.js";
+import { getShopCylinders } from "../controllers/cylinderController.js";
 import { protect, shopOwnerOnly } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 // Public
 router.get("/", getAllShops);
+router.get("/:shopId/cylinders", getShopCylinders);
 router.get("/:id", getShopById);
 
 // Private - ShopOwner

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getMyShop, createShop, updateMyShop } from '../../api/shops';
 import { ApiError } from '../../api/client';
+import ShopFeedbackSection from '../../components/ShopFeedbackSection';
 
 export default function ManageShop() {
   const [shop, setShop] = useState(null);
@@ -155,6 +156,13 @@ export default function ManageShop() {
               {editing && <button type="button" className="btn-secondary" onClick={() => setEditing(false)}>Cancel</button>}
             </div>
           </form>
+        </div>
+      )}
+
+      {/* Shop Feedback & Reviews */}
+      {shop && shop._id && (
+        <div style={{ marginTop: 'var(--space-8)' }}>
+          <ShopFeedbackSection shopId={shop._id} />
         </div>
       )}
 

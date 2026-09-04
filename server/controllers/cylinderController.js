@@ -6,12 +6,13 @@ import Shop from "../models/shopModel.js";
 // ── @access Public
 export const getShopCylinders = async (req, res) => {
   try {
-    const shop = await Shop.findById(req.params.shopId);
+    const shopId = req.params.shopId || req.params.id;
+    const shop = await Shop.findById(shopId);
     if (!shop || !shop.isActive) {
       return res.status(404).json({ message: "Shop not found" });
     }
 
-    const cylinders = await Cylinder.find({ shopId: req.params.shopId })
+    const cylinders = await Cylinder.find({ shopId })
       .sort({ sizeKg: 1 })
       .lean();
 
@@ -79,7 +80,7 @@ export const createCylinder = async (req, res) => {
       });
     }
 
-    const { sizeKg, gasType = "Litro", price, availableQuantity, description } = req.body;
+    const { sizeKg, gasType = "Litro", price, availableQuantity, description, capacityLitres } = req.body;
 
     // Validate size
     if (!CYLINDER_SIZES.includes(sizeKg)) {
