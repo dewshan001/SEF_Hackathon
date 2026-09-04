@@ -11,8 +11,11 @@ import CTABanner from './components/CTABanner';
 import Footer from './components/Footer';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import AdminDashboard from './pages/admin/AdminDashboard';
 
-const AUTH_ROUTES = ['/login', '/register'];
+// Routes where the top Navbar should be hidden
+const NO_NAVBAR_ROUTES = ['/login', '/register'];
+const isAdminRoute = (path) => path.startsWith('/admin');
 
 function Landing() {
   return (
@@ -32,12 +35,11 @@ function Landing() {
 
 function App() {
   const [theme, setTheme] = useState(() => {
-    // Persist theme across reloads
     return localStorage.getItem('gasgo-theme') || 'dark';
   });
 
   const location = useLocation();
-  const isAuthPage = AUTH_ROUTES.includes(location.pathname);
+  const hideNavbar = NO_NAVBAR_ROUTES.includes(location.pathname) || isAdminRoute(location.pathname);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -49,11 +51,13 @@ function App() {
 
   return (
     <div className="app">
-      {!isAuthPage && <Navbar theme={theme} onToggleTheme={toggleTheme} />}
+      {!hideNavbar && <Navbar theme={theme} onToggleTheme={toggleTheme} />}
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/*" element={<AdminDashboard />} />
       </Routes>
     </div>
   );
