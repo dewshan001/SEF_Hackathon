@@ -1148,6 +1148,50 @@
   font-weight: 600;
 }
 
+/* ── DB Status Pill & Indicator ── */
+.admin-db-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: all var(--dur-base) var(--ease-smooth);
+}
+
+.admin-db-pill.connected {
+  background: rgba(34, 197, 94, 0.12);
+  color: var(--color-success);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.admin-db-pill.error {
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--color-error);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.admin-db-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 6px currentColor;
+  display: inline-block;
+  animation: pulse-dot 2s infinite ease-in-out;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.85); }
+}
+
+.admin-spin {
+  animation: spin 0.8s linear infinite;
+}
+
 /* ===================================================
    ORBS / DECORATIONS
    =================================================== */

@@ -793,12 +793,14 @@ function OrdersSection({ orders }) {
 /* ===================================================
    SECTION: SETTINGS
    =================================================== */
-function SettingsSection({ user, toast }) {
+function SettingsSection({ user, toast, dbStatus, onRefreshDb }) {
   const [form, setForm] = useState({ current: '', newPw: '', confirm: '' });
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
+  const [refreshingDb, setRefreshingDb] = useState(false);
   const pwStrength = getPasswordStrength(form.newPw);
 
   const validate = () => {
@@ -815,7 +817,10 @@ function SettingsSection({ user, toast }) {
     if (Object.keys(errs).length) { setErrors(errs); return; }
     setSaving(true);
     try {
-      await api.put('/users/change-password', { password: form.newPw });
+      await api.put('/users/change-password', {
+        currentPassword: form.current,
+        newPassword: form.newPw,
+      });
       toast('success', 'Password changed successfully!');
       setForm({ current: '', newPw: '', confirm: '' });
       setErrors({});
@@ -825,6 +830,22 @@ function SettingsSection({ user, toast }) {
       setSaving(false);
     }
   };
+
+  const handleRefreshDb = async () => {
+    setRefreshingDb(true);
+    try {
+      if (onRefreshDb) {
+        await onRefreshDb();
+      }
+      toast('success', 'Database connection status updated.');
+    } catch {
+      toast('error', 'Failed to refresh database status.');
+    } finally {
+      setRefreshingDb(false);
+    }
+  };
+
+  const isConnected = dbStatus?.connected ?? true;
 
   return (
     <div className="admin-section-enter">
@@ -888,12 +909,19 @@ function SettingsSection({ user, toast }) {
 
             <div className="admin-field">
               <label>Confirm New Password</label>
-              <input
-                type="password"
-                value={form.confirm}
-                onChange={e => { setForm(f => ({ ...f, confirm: e.target.value })); setErrors(er => ({ ...er, confirm: '' })); }}
-                placeholder="Re-enter new password"
-              />
+              <div style={{ position: 'relative' }}>
+                <input
+                  type={showConfirm ? 'text' : 'password'}
+                  value={form.confirm}
+                  onChange={e => { setForm(f => ({ ...f, confirm: e.target.value })); setErrors(er => ({ ...er, confirm: '' })); }}
+                  placeholder="Re-enter new password"
+                  style={{ paddingRight: 40 }}
+                />
+                <button type="button" onClick={() => setShowConfirm(p => !p)}
+                  style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--text-muted)', display: 'flex' }}>
+                  <Icon d={showConfirm ? Icons.eyeOff : Icons.eye} size={15} />
+                </button>
+              </div>
               {errors.confirm && <span className="admin-field-error">{errors.confirm}</span>}
             </div>
 
@@ -907,7 +935,7 @@ function SettingsSection({ user, toast }) {
         {/* DB Status */}
         <div className="admin-settings-card">
           <div className="admin-settings-card-header">
-            <div className={`admin-settings-card-icon ${dbConnected ? 'green' : 'blue'}`}>
+            <div className={`admin-settings-card-icon ${isConnected ? 'green' : 'orange'}`}>
               <Icon d={Icons.database} size={18} />
             </div>
             <div>
@@ -916,24 +944,24 @@ function SettingsSection({ user, toast }) {
             </div>
           </div>
           <div className="admin-settings-card-body">
-            <div className={`admin-db-pill ${dbConnected ? 'connected' : 'error'}`} style={{ alignSelf: 'flex-start' }}>
+            <div className={`admin-db-pill ${isConnected ? 'connected' : 'error'}`} style={{ alignSelf: 'flex-start' }}>
               <span className="admin-db-dot" />
-              {dbConnected ? 'Connected' : 'Disconnected'}
+              {isConnected ? 'Connected' : 'Disconnected'}
             </div>
 
             <div className="db-status-rows">
               <div className="db-status-row">
                 <span className="db-status-row-label"><Icon d={Icons.database} size={13} />Host</span>
-                <span className="db-status-row-value ok">cluster0.t9wmrpz.mongodb.net</span>
+                <span className="db-status-row-value ok">{dbStatus?.host || 'cluster0.t9wmrpz.mongodb.net'}</span>
               </div>
               <div className="db-status-row">
                 <span className="db-status-row-label"><Icon d={Icons.info} size={13} />DB Name</span>
-                <span className="db-status-row-value">gasgo-lanka</span>
+                <span className="db-status-row-value">{dbStatus?.name || 'gasgo-lanka'}</span>
               </div>
               <div className="db-status-row">
                 <span className="db-status-row-label"><Icon d={Icons.check} size={13} />Connection State</span>
-                <span className={`db-status-row-value ${dbConnected ? 'ok' : 'err'}`}>
-                  {dbConnected ? 'connected (1)' : 'disconnected (0)'}
+                <span className={`db-status-row-value ${isConnected ? 'ok' : 'err'}`}>
+                  {isConnected ? `connected (${dbStatus?.state ?? 1})` : `disconnected (${dbStatus?.state ?? 0})`}
                 </span>
               </div>
               <div className="db-status-row">
@@ -943,8 +971,10 @@ function SettingsSection({ user, toast }) {
             </div>
 
             <button className="btn-admin-secondary" style={{ alignSelf: 'flex-start' }}
-              onClick={() => toast('info', 'Database connection refreshed.')}>
-              <Icon d={Icons.refresh} size={14} /> Refresh Status
+              disabled={refreshingDb}
+              onClick={handleRefreshDb}>
+              <Icon d={Icons.refresh} size={14} className={refreshingDb ? 'admin-spin' : ''} />
+              {refreshingDb ? 'Refreshing...' : 'Refresh Status'}
             </button>
           </div>
         </div>
@@ -1079,7 +1109,32 @@ export default function AdminDashboard() {
     setMobileSidebarOpen(false);
   };
 
-  const dbConnected = true;
+  const [dbStatus, setDbStatus] = useState({
+    connected: true,
+    state: 1,
+    host: 'cluster0.t9wmrpz.mongodb.net',
+    name: 'gasgo-lanka',
+  });
+
+  const checkDbStatus = useCallback(async () => {
+    try {
+      const res = await api.get('/admin/db-status');
+      if (res.data) {
+        setDbStatus({
+          connected: Boolean(res.data.connected),
+          state: res.data.state,
+          host: res.data.host || 'cluster0.t9wmrpz.mongodb.net',
+          name: res.data.name || 'gasgo-lanka',
+        });
+      }
+    } catch {
+      setDbStatus(prev => ({ ...prev, connected: false }));
+    }
+  }, []);
+
+  useEffect(() => {
+    checkDbStatus();
+  }, [checkDbStatus]);
 
   return (
     <>
@@ -1163,9 +1218,9 @@ export default function AdminDashboard() {
 
             <div className="admin-topbar-right">
               {/* DB status pill */}
-              <div className={`admin-db-pill ${dbConnected ? 'connected' : 'error'}`}>
+              <div className={`admin-db-pill ${dbStatus.connected ? 'connected' : 'error'}`}>
                 <span className="admin-db-dot" />
-                {dbConnected ? 'DB Connected' : 'DB Offline'}
+                {dbStatus.connected ? 'DB Connected' : 'DB Offline'}
               </div>
 
               {/* Theme toggle */}
@@ -1175,7 +1230,7 @@ export default function AdminDashboard() {
               </button>
 
               {/* Refresh */}
-              <button className="admin-topbar-btn" onClick={fetchUsers} title="Refresh data">
+              <button className="admin-topbar-btn" onClick={() => { fetchUsers(); checkDbStatus(); }} title="Refresh data">
                 <Icon d={Icons.refresh} size={16} />
               </button>
             </div>
@@ -1196,7 +1251,7 @@ export default function AdminDashboard() {
               <OrdersSection orders={orders} />
             )}
             {activeSection === 'settings' && (
-              <SettingsSection user={user} toast={toast} />
+              <SettingsSection user={user} toast={toast} dbStatus={dbStatus} onRefreshDb={checkDbStatus} />
             )}
           </main>
         </div>
