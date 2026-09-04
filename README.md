@@ -1,4 +1,51 @@
-# MERN Stack Project
+# Gasgo Lanka
+
+## Problem
+
+Customers often face long queues, uncertainty about gas availability, and difficulty knowing which shops have cylinders in stock. Gas shop owners also lack an efficient way to manage stock and customer orders.
+
+## Solution
+
+GasGo Lanka is a digital LPG ordering and token management platform that allows customers to check available cylinders, select one or more cylinders, place an order, and receive a unique token through the system and email. Shop owners can manage cylinder stock, receive orders and notifications, and update order status. Google Maps helps customers easily locate the selected gas shop, while role-based access keeps customer, owner, and admin information secure.
+
+1. **Customer Token Ordering** - Godage S.N.
+
+   Customers can select a gas shop and apply for a gas token/order through GasGo.
+
+2. **Real-Time Stock Management** - Abeysinghe J.H.C.M.
+
+   When a customer gets a token, the shop's available gas stock automatically decreases by 1. This prevents the displayed stock from becoming inaccurate.
+
+3. **Owner Order Management** - Gunawadhana M.D.K.
+
+   Shop owners have a dashboard where they can see customer orders/token applications, allowing them to know who has requested gas.
+
+4. **Owner Stock Updating/Feedback** - Methasha W.V.D.S.
+
+   When new gas cylinders arrive, the shop owner can update/increase the available stock level through their dashboard.
+
+## Git repository link
+
+https://github.com/dewshan001/SEF_Hackathon.git
+
+## Deployed application link
+
+https://sef-hackathon.vercel.app
+
+## Two-minute demonstration video link
+
+https://drive.google.com/drive/folders/1EvWyqNwD9REb1VQmk2LRlm8KGn4-pb-D?usp=sharing
+
+## Team member names and student IDs
+
+| IT Number  | Name                 |
+|------------|----------------------|
+| IT24102990 | Godage S.N.          |
+| IT24103014 | Abeysinghe J.H.C.M.  |
+| IT24103005 | Gunawadhana M.D.K.   |
+| IT24102875 | Methasha W.V.D.S.    |
+
+---
 
 A full-stack web application built with **MongoDB**, **Express.js**, **React** (Vite), and **Node.js**.
 
