@@ -91,16 +91,28 @@ export const updateProfile = async (req, res) => {
 // @access  Private/Admin
 export const changeAdminPassword = async (req, res) => {
   try {
+    const { currentPassword, newPassword, password } = req.body;
+    const newPw = newPassword || password;
+
+    if (!newPw || newPw.length < 6) {
+      return res.status(400).json({ message: "New password must be at least 6 characters" });
+    }
+
+    if (!currentPassword) {
+      return res.status(400).json({ message: "Current password is required" });
+    }
+
     const user = await User.findById(req.user._id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    if (req.body.password) {
-      user.password = req.body.password;
-      await user.save();
-      res.json({ message: "Password updated successfully" });
-    } else {
-      res.status(400).json({ message: "Password is required" });
+    const isMatch = await user.matchPassword(currentPassword);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Current password is incorrect" });
     }
+
+    user.password = newPw;
+    await user.save();
+    res.json({ message: "Password updated successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
