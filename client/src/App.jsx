@@ -11,6 +11,9 @@ import CTABanner from './components/CTABanner';
 import Footer from './components/Footer';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import CustomerDashboard from './pages/CustomerDashboard';
+import ShopOwnerDashboard from './pages/ShopOwnerDashboard';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const AUTH_ROUTES = ['/login', '/register'];
 
@@ -54,6 +57,24 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route
+          path="/customer"
+          element={
+            <ProtectedRoute role="CUSTOMER">
+              <main><CustomerDashboard /></main>
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/shop-owner"
+          element={
+            <ProtectedRoute role="SHOP_OWNER">
+              <main><ShopOwnerDashboard /></main>
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </div>
   );

@@ -1,0 +1,145 @@
+/* ===================================================
+   Shared Dashboard Primitives
+   (used by CustomerDashboard + ShopOwnerDashboard)
+   =================================================== */
+
+/* ── Dashboard state cards (loading / error / empty) ── */
+.dash-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-10) var(--space-6);
+  text-align: center;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: .9rem;
+}
+
+.dash-loading { color: var(--text-muted); }
+
+.dash-spinner {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid var(--border-default);
+  border-top-color: var(--brand-primary);
+  animation: dash-spin .8s linear infinite;
+}
+
+@keyframes dash-spin {
+  to { transform: rotate(360deg); }
+}
+
+.dash-error {
+  border-radius: var(--r-xl);
+  background: rgba(239,68,68,.08);
+  border: 1px solid rgba(239,68,68,.25);
+  color: var(--color-error);
+}
+
+.dash-empty { border-radius: var(--r-xl); }
+
+/* ── Modal ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-overlay);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5);
+  z-index: 1000;
+  animation: fade-in var(--dur-base) var(--ease-smooth);
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: var(--space-8);
+  border-radius: var(--r-2xl);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-6);
+}
+
+.modal-close-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--glass-bg);
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--r-md);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background var(--dur-fast), color var(--dur-fast);
+}
+
+.modal-close-btn:hover {
+  background: var(--brand-tint);
+  color: var(--brand-amber);
+}
+
+.modal-error {
+  color: var(--color-error);
+  font-size: .85rem;
+  margin-bottom: var(--space-4);
+}
+
+/* ── Orders list ── */
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.order-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-6);
+  flex-wrap: wrap;
+}
+
+.order-row-main {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: .875rem;
+}
+
+/* ── Status badge ── */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 14px;
+  border-radius: var(--r-pill);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.status-pending   { background: rgba(245,166,35,.14); color: var(--color-warning); border: 1px solid rgba(245,166,35,.3); }
+.status-confirmed { background: rgba(59,130,246,.14); color: var(--color-info);    border: 1px solid rgba(59,130,246,.3); }
+.status-delivered { background: rgba(34,197,94,.14);  color: var(--color-success); border: 1px solid rgba(34,197,94,.3); }
+.status-cancelled { background: rgba(239,68,68,.14);  color: var(--color-error);   border: 1px solid rgba(239,68,68,.3); }
+
+/* ── Responsive ── */
+@media (max-width: 540px) {
+  .modal-card { padding: var(--space-6) var(--space-5); }
+  .order-row { flex-direction: column; align-items: flex-start; }
+}
