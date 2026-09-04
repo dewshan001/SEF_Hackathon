@@ -77,15 +77,9 @@ export default function Navbar({ theme, onToggleTheme }) {
             { label: 'How It Works',  href: '#how-it-works'  },
             { label: 'Stores',        href: '#stores'        },
             { label: 'Book Now',      href: '#book'          },
-            { label: 'Customer',      to: '/customer'        },
-            { label: 'Shop Owner',    to: '/shop-owner'       },
-          ].map(({ label, href, to }) => (
+          ].map(({ label, href }) => (
             <li key={label}>
-              {to ? (
-                <Link to={to} className="nav-link" onClick={handleNavClick}>{label}</Link>
-              ) : (
-                <a href={href} className="nav-link" onClick={handleNavClick}>{label}</a>
-              )}
+              <a href={href} className="nav-link" onClick={handleNavClick}>{label}</a>
             </li>
           ))}
         </ul>
