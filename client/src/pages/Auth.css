@@ -812,3 +812,26 @@
   0%,100% { opacity:1; transform:scale(1); }
   50%     { opacity:.4; transform:scale(.65); }
 }
+
+/* ── Server error banner ── */
+.auth-server-error {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 14px;
+  margin-bottom: 14px;
+  background: rgba(239,68,68,.10);
+  border: 1px solid rgba(239,68,68,.28);
+  border-radius: 10px;
+  color: var(--color-error);
+  font-size: .8rem;
+  font-weight: 500;
+  font-family: var(--font-body);
+  line-height: 1.45;
+  animation: field-error-in .25s var(--ease-smooth) both;
+}
+
+.auth-server-error svg {
+  flex-shrink: 0;
+  opacity: .85;
+}

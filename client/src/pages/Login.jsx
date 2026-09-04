@@ -1,15 +1,21 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Auth.css';
 import { isValidEmail, isValidPassword } from '../utils/validators';
+import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
-  const [form, setForm] = useState({ email: '', password: '' });
-  const [touched, setTouched] = useState({});
-  const [showPassword, setShowPassword] = useState(false);
-  const [remember, setRemember] = useState(false);
-  const [status, setStatus] = useState('idle'); // idle | loading | success
+  const { login } = useAuth();
+  const navigate   = useNavigate();
 
+  const [form, setForm]           = useState({ email: '', password: '' });
+  const [touched, setTouched]     = useState({});
+  const [showPassword, setShowPw] = useState(false);
+  const [remember, setRemember]   = useState(false);
+  const [status, setStatus]       = useState('idle'); // idle | loading | success | error
+  const [serverError, setServerError] = useState('');
+
+  // ── Client-side validation ─────────────────────────────────────────────
   const errors = {
     email: !form.email
       ? 'Email is required'
@@ -23,18 +29,41 @@ export default function Login() {
         : '',
   };
 
-  const isValid = !errors.email && !errors.password;
+  const isFormValid = !errors.email && !errors.password;
 
-  const handleBlur = (field) => setTouched(t => ({ ...t, [field]: true }));
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setTouched({ email: true, password: true });
-    if (!isValid) return;
-    setStatus('loading');
-    setTimeout(() => setStatus('success'), 1300);
+  const handleBlur  = (field) => setTouched(t => ({ ...t, [field]: true }));
+  const handleChange = (field, value) => {
+    setServerError('');
+    setForm(f => ({ ...f, [field]: value }));
   };
 
+  // ── Submit → call backend ──────────────────────────────────────────────
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setTouched({ email: true, password: true });
+    if (!isFormValid) return;
+
+    setStatus('loading');
+    setServerError('');
+
+    const result = await login({ email: form.email, password: form.password });
+
+    if (result.success) {
+      setStatus('success');
+      // Redirect based on role
+      const role = result.user?.role;
+      setTimeout(() => {
+        if (role === 'ADMIN')      navigate('/admin');
+        else if (role === 'SHOP_OWNER') navigate('/shop');
+        else                       navigate('/');
+      }, 1200);
+    } else {
+      setStatus('error');
+      setServerError(result.message);
+    }
+  };
+
+  // ── Success screen ─────────────────────────────────────────────────────
   if (status === 'success') {
     return (
       <div className="auth-page">
@@ -49,11 +78,8 @@ export default function Login() {
               </div>
               <h2 className="success-title">Welcome Back!</h2>
               <p className="success-msg">
-                You've signed in successfully as <strong>{form.email}</strong>.
+                Signed in as <strong>{form.email}</strong>. Redirecting you now…
               </p>
-              <Link to="/" className="btn-primary auth-submit-btn" id="login-continue-btn">
-                Continue to Home
-              </Link>
             </div>
           </div>
         </div>
@@ -77,9 +103,7 @@ export default function Login() {
         <div className="auth-shell">
           {/* Mobile brand */}
           <div className="auth-mobile-brand">
-            <div className="auth-mobile-brand-icon">
-              <FlameIcon size={18} />
-            </div>
+            <div className="auth-mobile-brand-icon"><FlameIcon size={18} /></div>
             <span className="auth-mobile-brand-name">Gas<span>Go</span> Lanka</span>
           </div>
 
@@ -95,6 +119,16 @@ export default function Login() {
               Order gas cylinders and track your deliveries in seconds.
             </p>
 
+            {/* Server-level error banner */}
+            {serverError && (
+              <div className="auth-server-error" role="alert">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                {serverError}
+              </div>
+            )}
+
             <form className="auth-form" onSubmit={handleSubmit} noValidate>
               <div className="field-group">
                 <label className="field-label" htmlFor="login-email">Email Address</label>
@@ -105,7 +139,7 @@ export default function Login() {
                   className={`field-input ${touched.email && errors.email ? 'has-error' : touched.email && !errors.email && form.email ? 'is-valid' : ''}`}
                   placeholder="you@example.com"
                   value={form.email}
-                  onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                  onChange={e => handleChange('email', e.target.value)}
                   onBlur={() => handleBlur('email')}
                 />
                 {touched.email && !errors.email && form.email && <FieldCheck />}
@@ -122,14 +156,14 @@ export default function Login() {
                     className={`field-input ${touched.password && errors.password ? 'has-error' : ''}`}
                     placeholder="••••••••"
                     value={form.password}
-                    onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+                    onChange={e => handleChange('password', e.target.value)}
                     onBlur={() => handleBlur('password')}
                   />
                   <button
                     type="button"
                     className="pw-toggle-btn"
                     id="login-pw-toggle-btn"
-                    onClick={() => setShowPassword(s => !s)}
+                    onClick={() => setShowPw(s => !s)}
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
                     <EyeIcon off={showPassword} />
@@ -140,11 +174,7 @@ export default function Login() {
 
               <div className="auth-row">
                 <label className="remember-check">
-                  <input
-                    type="checkbox"
-                    checked={remember}
-                    onChange={e => setRemember(e.target.checked)}
-                  />
+                  <input type="checkbox" checked={remember} onChange={e => setRemember(e.target.checked)} />
                   <span>Remember me</span>
                 </label>
                 <a href="#forgot" className="forgot-link" id="forgot-password-link">Forgot password?</a>
@@ -179,7 +209,7 @@ export default function Login() {
   );
 }
 
-/* ── Left panel shared component ── */
+/* ── Left panel ── */
 function LeftPanel() {
   return (
     <div className="auth-left">
@@ -187,34 +217,22 @@ function LeftPanel() {
       <div className="auth-left-grid" />
       <div className="auth-left-orb auth-left-orb-1" />
       <div className="auth-left-orb auth-left-orb-2" />
-
       <div className="auth-left-content">
-        {/* Brand */}
         <div className="auth-brand">
-          <div className="auth-brand-icon">
-            <FlameIcon size={22} />
-          </div>
+          <div className="auth-brand-icon"><FlameIcon size={22} /></div>
           <span className="auth-brand-name">Gas<span>Go</span> Lanka</span>
         </div>
-
-        {/* Hero text */}
         <div className="auth-hero-text">
           <div className="auth-hero-badge">
             <span className="pulse-dot" />
             Live delivery tracking
           </div>
-
           <h2 className="auth-hero-heading">
-            Gas delivered<br />
-            to your door,<br />
-            <span className="grad">in minutes.</span>
+            Gas delivered<br />to your door,<br /><span className="grad">in minutes.</span>
           </h2>
-
           <p className="auth-hero-sub">
             Sri Lanka&apos;s fastest LP gas ordering platform. Book a cylinder in under 60 seconds and track your delivery live.
           </p>
-
-          {/* Stats */}
           <div className="auth-stats">
             <div className="auth-stat">
               <div className="auth-stat-val">50<span>K+</span></div>
@@ -230,8 +248,6 @@ function LeftPanel() {
             </div>
           </div>
         </div>
-
-        {/* Trust badges */}
         <div className="auth-trust">
           <div className="auth-trust-item">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Auth.css';
 import {
   isValidEmail,
@@ -7,6 +7,7 @@ import {
   isValidPassword,
   getPasswordStrength,
 } from '../utils/validators';
+import { useAuth } from '../context/AuthContext';
 
 const initialForm = {
   name: '',
@@ -24,13 +25,17 @@ const STEPS = [
 ];
 
 export default function Register() {
-  const [step, setStep] = useState(1);
-  const [form, setForm] = useState(initialForm);
-  const [touched, setTouched] = useState({});
+  const { register } = useAuth();
+  const navigate      = useNavigate();
+
+  const [step, setStep]               = useState(1);
+  const [form, setForm]               = useState(initialForm);
+  const [touched, setTouched]         = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [agreed, setAgreed] = useState(false);
-  const [status, setStatus] = useState('idle'); // idle | loading | success
+  const [agreed, setAgreed]           = useState(false);
+  const [status, setStatus]           = useState('idle'); // idle | loading | success | error
+  const [serverError, setServerError] = useState('');
 
   const strength = getPasswordStrength(form.password);
 
@@ -72,7 +77,10 @@ export default function Register() {
   const step3Valid = !errors.password && !errors.confirmPassword && agreed;
   const isValid = step1Valid && step2Valid && step3Valid;
 
-  const setField = (field, value) => setForm(f => ({ ...f, [field]: value }));
+  const setField = (field, value) => {
+    setServerError('');
+    setForm(f => ({ ...f, [field]: value }));
+  };
   const handleBlur = (field) => setTouched(t => ({ ...t, [field]: true }));
 
   const goNext = () => {
@@ -89,12 +97,29 @@ export default function Register() {
 
   const goBack = () => setStep(s => Math.max(1, s - 1));
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setTouched(t => ({ ...t, password: true, confirmPassword: true }));
     if (!isValid) return;
+
     setStatus('loading');
-    setTimeout(() => setStatus('success'), 1400);
+    setServerError('');
+
+    const result = await register({
+      name:     form.name,
+      email:    form.email,
+      phone:    form.phone,
+      address:  form.address,
+      password: form.password,
+    });
+
+    if (result.success) {
+      setStatus('success');
+      setTimeout(() => navigate('/login'), 2000);
+    } else {
+      setStatus('error');
+      setServerError(result.message);
+    }
   };
 
   if (status === 'success') {
@@ -358,6 +383,16 @@ export default function Register() {
                       <a href="#privacy" className="terms-link">Privacy Policy</a>.
                     </span>
                   </label>
+
+                  {/* Server error banner — shown on step 3 */}
+                  {serverError && (
+                    <div className="auth-server-error" role="alert">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+                      </svg>
+                      {serverError}
+                    </div>
+                  )}
 
                   <div className="form-btn-row">
                     <button type="button" className="btn-secondary" id="reg-step3-back-btn" onClick={goBack}>← Back</button>
