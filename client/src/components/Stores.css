@@ -1,0 +1,214 @@
+/* ===================================================
+   Stores Page Styles
+   =================================================== */
+.stores-page {
+  min-height: calc(100svh - var(--navbar-h));
+  padding-top: calc(var(--navbar-h) + var(--space-8));
+  padding-bottom: var(--space-16);
+  position: relative;
+  animation: fade-in 0.45s var(--ease-smooth) both;
+}
+
+.stores-header {
+  text-align: center;
+  max-width: 840px;
+  margin: 0 auto var(--space-10);
+}
+
+.stores-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 900;
+  letter-spacing: -1px;
+  color: var(--text-primary);
+  margin-top: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.stores-subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-8);
+}
+
+/* ── Search and filters ── */
+.stores-filter-bar {
+  padding: var(--space-4) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  text-align: left;
+}
+
+.search-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-pill);
+  padding: 10px 18px;
+  color: var(--text-muted);
+}
+
+.store-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.store-search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.district-filter-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-pill {
+  padding: 6px 14px;
+  border-radius: var(--r-pill);
+  font-size: 0.82rem;
+  font-weight: 600;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--dur-fast);
+}
+
+.filter-pill:hover {
+  background: var(--glass-bg-hover);
+  color: var(--text-primary);
+}
+
+.filter-pill.active {
+  background: linear-gradient(135deg, var(--brand-primary), var(--brand-amber));
+  color: #fff;
+  border-color: transparent;
+}
+
+/* ── Stores Grid ── */
+.stores-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-6);
+  margin-bottom: var(--space-12);
+}
+
+.store-card {
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.store-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.store-district-tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--brand-primary);
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
+}
+
+.store-card-name {
+  font-family: var(--font-display);
+  font-size: 1.12rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.store-status-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  white-space: nowrap;
+}
+
+.store-status-badge.ok {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.store-status-badge.low {
+  background: rgba(245, 166, 35, 0.15);
+  color: #f5a623;
+  border: 1px solid rgba(245, 166, 35, 0.3);
+}
+
+.store-card-address {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-5);
+}
+
+.store-card-address svg {
+  flex-shrink: 0;
+  color: var(--brand-primary);
+}
+
+.store-stock-counts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.15);
+  padding: 10px;
+  border-radius: var(--r-md);
+  margin-bottom: var(--space-5);
+  border: 1px solid var(--border-subtle);
+}
+
+.stock-count-item {
+  text-align: center;
+}
+
+.count-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.count-val {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-top: 2px;
+}
+
+.store-card-actions {
+  display: flex;
+}
+
+.store-call-btn {
+  width: 100%;
+  justify-content: center;
+  font-size: 0.85rem;
+  padding: 8px 16px;
+}
+
+.stores-bottom-action {
+  text-align: center;
+}

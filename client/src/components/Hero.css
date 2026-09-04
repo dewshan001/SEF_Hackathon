@@ -143,35 +143,28 @@
   animation: fade-in .9s .2s ease both;
 }
 
-.cylinder-stage {
+.cylinder-stage-3d {
   position: relative;
-  width: clamp(200px, 28vw, 300px);
-  height: auto;
-  transition: transform .15s ease-out;
-  transform-style: preserve-3d;
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.cylinder-glow {
+.cylinder-glow-3d {
   position: absolute;
-  bottom: -24px;
+  bottom: 5%;
   left: 50%;
   transform: translateX(-50%);
-  width: 70%;
-  height: 70px;
-  background: radial-gradient(ellipse, rgba(232,93,26,.55) 0%, transparent 70%);
-  filter: blur(18px);
+  width: 80%;
+  height: 90px;
+  background: radial-gradient(ellipse, rgba(232,93,26,.6) 0%, transparent 70%);
+  filter: blur(24px);
   pointer-events: none;
   animation: glow-pulse 3s ease-in-out infinite alternate;
 }
 
-.cylinder-svg {
-  width: 100%;
-  height: auto;
-  filter:
-    drop-shadow(0 24px 48px rgba(232,93,26,.32))
-    drop-shadow(0  8px 16px rgba(0,0,0,.35));
-  animation: float-y 5s ease-in-out infinite;
-}
 
 /* ── Floating info badges ── */
 .float-badge {
@@ -263,41 +256,6 @@
   transition: color var(--dur-slow);
 }
 
-/* ── Scroll indicator ── */
-.scroll-indicator {
-  position: absolute;
-  bottom: var(--space-6);
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-2);
-  color: var(--text-muted);
-  font-size: .72rem;
-  font-weight: 500;
-  letter-spacing: .05em;
-  animation: fade-in 1s 1.2s ease both;
-  pointer-events: none;
-}
-
-.scroll-mouse {
-  width: 22px;
-  height: 36px;
-  border: 2px solid var(--border-default);
-  border-radius: 11px;
-  display: flex;
-  justify-content: center;
-  padding-top: 6px;
-}
-
-.scroll-wheel {
-  width: 4px;
-  height: 8px;
-  background: var(--brand-primary);
-  border-radius: 2px;
-  animation: scroll-wheel 2s ease infinite;
-}
 
 /* ── Responsive ── */
 @media (max-width: 900px) {
