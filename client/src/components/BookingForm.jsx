@@ -2,9 +2,9 @@ import { useState } from 'react';
 import './BookingForm.css';
 
 const CYLINDER_TYPES = [
-  { id: 'lp-12', label: '12.5 kg LP Gas', price: 'LKR 4,200', tag: 'Most Popular' },
-  { id: 'lp-5', label: '5 kg LP Gas', price: 'LKR 1,800', tag: '' },
-  { id: 'commercial', label: '35 kg Commercial', price: 'LKR 11,500', tag: 'Business' },
+  { id: 'lp-12', label: '12.5 kg Litro Gas', price: 'LKR 4,200', tag: 'Most Popular' },
+  { id: 'lp-5', label: '5 kg Litro Gas', price: 'LKR 1,800', tag: '' },
+  { id: 'commercial', label: '37.5 kg Laugfs Commercial', price: 'LKR 11,500', tag: 'Business' },
 ];
 
 export default function BookingForm() {
@@ -13,12 +13,25 @@ export default function BookingForm() {
   const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({ name: '', phone: '', address: '' });
+  const [generatedToken, setGeneratedToken] = useState('');
+  const [copied, setCopied] = useState(false);
 
   const selectedType = CYLINDER_TYPES.find(c => c.id === selected);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const year = new Date().getFullYear();
+    const suffix = Math.floor(100000 + Math.random() * 900000);
+    setGeneratedToken(`GAS-${year}-${suffix}`);
     setSubmitted(true);
+  };
+
+  const handleCopy = () => {
+    if (generatedToken) {
+      navigator.clipboard.writeText(generatedToken);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }
   };
 
   if (submitted) {
@@ -33,25 +46,51 @@ export default function BookingForm() {
             </div>
             <h2 className="success-title">Booking Confirmed! 🎉</h2>
             <p className="success-msg">
-              Your <strong>{selectedType?.label}</strong> booking has been placed successfully.
-              A confirmation will be sent to <strong>{form.phone}</strong> shortly.
+              Your <strong>{selectedType?.label}</strong> order has been placed.
+              Please save your pickup token below:
             </p>
+
+            <div style={{
+              background: 'var(--brand-tint)',
+              border: '2px solid var(--brand-border-soft)',
+              borderRadius: 'var(--r-lg)',
+              padding: 'var(--space-5)',
+              margin: 'var(--space-4) 0',
+              textAlign: 'center'
+            }}>
+              <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--brand-amber)', fontWeight: 700, letterSpacing: '0.08em', marginBottom: 4 }}>
+                Your Pickup Token Number
+              </div>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', fontWeight: 900 }} className="gradient-text">
+                {generatedToken}
+              </div>
+              <button
+                type="button"
+                className="btn-secondary"
+                style={{ marginTop: '10px', fontSize: '0.8rem', padding: '6px 14px' }}
+                onClick={handleCopy}
+              >
+                {copied ? '✓ Token Copied' : '📋 Copy Token'}
+              </button>
+            </div>
+
             <div className="success-details">
               <div className="detail-row">
-                <span>Order ID</span>
-                <span className="gradient-text">#GGL{Math.floor(Math.random() * 90000) + 10000}</span>
+                <span>Contact Phone</span>
+                <span>{form.phone}</span>
               </div>
               <div className="detail-row">
-                <span>Estimated Delivery</span>
-                <span>25–40 minutes</span>
+                <span>Quantity</span>
+                <span>{qty} cylinder(s)</span>
               </div>
               <div className="detail-row">
                 <span>Amount</span>
-                <span>{selectedType?.price}</span>
+                <span className="gradient-text">{selectedType?.price}</span>
               </div>
             </div>
+
             <button className="btn-primary" onClick={() => { setSubmitted(false); setStep(1); setForm({ name: '', phone: '', address: '' }); setQty(1); }} id="book-again-btn">
-              Book Another
+              Book Another Cylinder
             </button>
           </div>
         </div>

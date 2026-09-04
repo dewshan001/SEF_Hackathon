@@ -75,7 +75,7 @@ export default function CustomerDashboard() {
         <header className="cust-dash-header">
           <div className="section-label"><span className="dot" />Customer Portal</div>
           <h1 className="section-title" style={{ textAlign: 'left' }}>
-            Welcome back, <span className="gradient-text">{user?.name?.split(' ')[0] || 'there'}</span>
+            Available <span className="gradient-text">LP Gas Stock</span>
           </h1>
           <p className="section-subtitle" style={{ textAlign: 'left' }}>
             Browse available LP gas stock near you and book a cylinder in seconds.
@@ -143,8 +143,7 @@ export default function CustomerDashboard() {
                   </div>
                   <div className="stock-price gradient-text">{formatLKR(s.price)}</div>
                   <div className="stock-shop-info">
-                    <span className="text-primary">{s.shop?.shopName || 'Local Shop'}</span>
-                    <span className="text-muted">{s.shop?.contactNumber || '—'}</span>
+                    <span className="text-primary">{s.shop?.shopName || 'Local Gas Station'}</span>
                   </div>
                   <div className={`stock-qty-avail ${available ? 'text-secondary' : ''}`} style={!available ? { color: 'var(--color-error)' } : undefined}>
                     {available ? `${s.quantity} in stock` : 'Out of stock'}
