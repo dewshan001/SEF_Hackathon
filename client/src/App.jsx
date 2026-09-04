@@ -58,9 +58,22 @@ function App() {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/*" element={<AdminDashboard />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute role="ADMIN">
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/*"
+          element={
+            <ProtectedRoute role="ADMIN">
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/customer"
           element={

@@ -17,10 +17,12 @@ export default function Hero() {
   const heroRef = useRef(null);
 
   const dashboardUrl = isAuthenticated
-    ? (role === 'CUSTOMER' ? '/customer' : role === 'SHOP_OWNER' ? '/shop-owner' : '/admin')
-    : '/admin';
+    ? (role === 'ADMIN' ? '/admin' : role === 'SHOP_OWNER' ? '/shop-owner' : '/customer')
+    : '/login';
 
-  const dashboardLabel = role === 'ADMIN' || !isAuthenticated ? 'Admin Dashboard' : 'Dashboard';
+  const dashboardLabel = isAuthenticated
+    ? (role === 'ADMIN' ? 'Admin Dashboard' : 'Dashboard')
+    : 'Sign In';
 
   useEffect(() => {
     const onMouse = (e) => {

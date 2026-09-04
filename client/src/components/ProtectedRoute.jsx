@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 const ROLE_HOME = {
   CUSTOMER: '/customer',
   SHOP_OWNER: '/shop-owner',
-  ADMIN: '/',
+  ADMIN: '/admin',
 };
 
 export default function ProtectedRoute({ role, children }) {

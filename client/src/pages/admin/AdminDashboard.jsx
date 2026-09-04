@@ -1044,10 +1044,12 @@ export default function AdminDashboard() {
 
   /* ── Auth guard ── */
   useEffect(() => {
-    if (isAuthenticated && role !== 'ADMIN') {
-      navigate('/');
+    if (!isAuthenticated) {
+      navigate('/login', { replace: true, state: { from: '/admin' } });
+    } else if (role !== 'ADMIN') {
+      const roleHome = role === 'CUSTOMER' ? '/customer' : role === 'SHOP_OWNER' ? '/shop-owner' : '/';
+      navigate(roleHome, { replace: true });
     }
-    // Intentionally allow unauthenticated access in dev (shows mock data)
   }, [isAuthenticated, role, navigate]);
 
   /* ── Theme sync ── */
@@ -1058,7 +1060,7 @@ export default function AdminDashboard() {
 
   /* ── Fetch real users ── */
   const fetchUsers = useCallback(async () => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated || role !== 'ADMIN') return;
     setLoadingUsers(true);
     try {
       const { data } = await api.get('/users');
@@ -1117,11 +1119,12 @@ export default function AdminDashboard() {
   });
 
   const checkDbStatus = useCallback(async () => {
+    if (!isAuthenticated || role !== 'ADMIN') return;
     try {
       const res = await api.get('/admin/db-status');
       if (res.data) {
         setDbStatus({
-          connected: Boolean(res.data.connected),
+          connected: res.data.status === 'connected',
           state: res.data.state,
           host: res.data.host || 'cluster0.t9wmrpz.mongodb.net',
           name: res.data.name || 'gasgo-lanka',
@@ -1130,11 +1133,15 @@ export default function AdminDashboard() {
     } catch {
       setDbStatus(prev => ({ ...prev, connected: false }));
     }
-  }, []);
+  }, [isAuthenticated, role]);
 
   useEffect(() => {
     checkDbStatus();
   }, [checkDbStatus]);
+
+  if (!isAuthenticated || role !== 'ADMIN') {
+    return null;
+  }
 
   return (
     <>
