@@ -1,7 +1,13 @@
-import nodemailer from "nodemailer";
+let nodemailer;
+try {
+  nodemailer = (await import("nodemailer")).default;
+} catch (e) {
+  // Nodemailer not installed yet; email utility falls back to console logging
+}
 
 // ── Create Transporter (SMTP or Mock) ─────────────────────────────────────────
 const getTransporter = () => {
+  if (!nodemailer) return null;
   const user = process.env.SMTP_USER || process.env.EMAIL_USER;
   const pass = process.env.SMTP_PASS || process.env.EMAIL_PASS;
   const host = process.env.SMTP_HOST || (user && user.includes("@gmail.com") ? "smtp.gmail.com" : null);
