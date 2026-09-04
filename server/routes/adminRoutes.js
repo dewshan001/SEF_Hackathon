@@ -7,10 +7,9 @@ import {
   getAllCylinders,
   getAllOrders,
   getStats,
-  getAdminStats,
   getDbStatus,
 } from "../controllers/adminController.js";
-import { protect, adminOnly, admin } from "../middleware/authMiddleware.js";
+import { protect, adminOnly } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -25,15 +24,5 @@ router.get("/owners", getAllOwners);
 router.get("/shops", getAllShops);
 router.get("/cylinders", getAllCylinders);
 router.get("/orders", getAllOrders);
-
-export default router;
-
-import { getAdminStats, getDbStatus } from "../controllers/adminController.js";
-import { protect, admin } from "../middleware/authMiddleware.js";
-
-const router = express.Router();
-
-router.route("/stats").get(protect, admin, getAdminStats);
-router.route("/db-status").get(protect, admin, getDbStatus);
 
 export default router;
