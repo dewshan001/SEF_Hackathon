@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { getOrderById } from '../../api/orders';
 import StatusBadge from '../../components/StatusBadge';
 import MapButton from '../../components/MapButton';
+import { getOrderFeedback, createFeedback, updateFeedback, deleteFeedback } from '../../api/feedback';
 
 function formatLKR(v) { return `Rs. ${Number(v || 0).toLocaleString('en-LK')}`; }
 
@@ -117,33 +118,38 @@ export default function CustomerOrderDetail() {
           </div>
         </div>
 
-        {/* Shop Info */}
-        <div>
-          <h2 className="form-step-title" style={{ marginBottom: 'var(--space-4)' }}>Pickup Shop</h2>
-          {shop ? (
-            <div className="glass-card" style={{ padding: 'var(--space-6)', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-              <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.1rem', color: 'var(--text-primary)' }}>
-                🏬 {shop.shopName}
-              </div>
-              {shop.address && (
-                <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
-                  📍 {shop.address}
+        {/* Shop Info & Order Feedback */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
+          <div>
+            <h2 className="form-step-title" style={{ marginBottom: 'var(--space-4)' }}>Pickup Shop</h2>
+            {shop ? (
+              <div className="glass-card" style={{ padding: 'var(--space-6)', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.1rem', color: 'var(--text-primary)' }}>
+                  🏬 {shop.shopName}
                 </div>
-              )}
-              {shop.contactNumber && (
-                <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                  📞 {shop.contactNumber}
+                {shop.address && (
+                  <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
+                    📍 {shop.address}
+                  </div>
+                )}
+                {shop.contactNumber && (
+                  <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                    📞 {shop.contactNumber}
+                  </div>
+                )}
+                <div style={{ marginTop: 'var(--space-3)' }}>
+                  <MapButton lat={lat} lng={lng} address={shop.address || shop.shopName} />
                 </div>
-              )}
-              <div style={{ marginTop: 'var(--space-3)' }}>
-                <MapButton lat={lat} lng={lng} />
               </div>
-            </div>
-          ) : (
-            <div className="glass-card" style={{ padding: 'var(--space-5)', color: 'var(--text-muted)' }}>
-              Shop details unavailable
-            </div>
-          )}
+            ) : (
+              <div className="glass-card" style={{ padding: 'var(--space-5)', color: 'var(--text-muted)' }}>
+                Shop details unavailable
+              </div>
+            )}
+          </div>
+
+          {/* Order Feedback / Rating Section */}
+          <OrderFeedbackCard order={order} />
         </div>
       </div>
 
@@ -245,3 +251,169 @@ export default function CustomerOrderDetail() {
     </div>
   );
 }
+
+function OrderFeedbackCard({ order }) {
+  const shopId = order.shopId?._id || order.shopId;
+  const [feedback, setFeedback] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [msg, setMsg] = useState('');
+
+  const loadFeedback = () => {
+    if (!order._id) return;
+    setLoading(true);
+    getOrderFeedback(order._id)
+      .then(d => {
+        setFeedback(d);
+        if (d) {
+          setRating(d.rating);
+          setComment(d.comment);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadFeedback();
+  }, [order._id]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!comment.trim()) return;
+    setSubmitting(true);
+    setMsg('');
+    try {
+      if (feedback && editing) {
+        const updated = await updateFeedback(feedback._id, { rating, comment: comment.trim() });
+        setFeedback(updated);
+        setEditing(false);
+        setMsg('Feedback updated successfully!');
+      } else {
+        const created = await createFeedback(shopId, {
+          rating,
+          comment: comment.trim(),
+          orderId: order._id,
+          token: order.token,
+        });
+        setFeedback(created);
+        setEditing(false);
+        setMsg('Thank you! Your review has been submitted.');
+      }
+      setTimeout(() => setMsg(''), 4000);
+    } catch (err) {
+      setMsg(err?.message || 'Failed to save review.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm('Delete your review for this order?')) return;
+    try {
+      await deleteFeedback(feedback._id);
+      setFeedback(null);
+      setComment('');
+      setRating(5);
+      setEditing(false);
+    } catch (err) {
+      window.alert(err?.message || 'Failed to delete review.');
+    }
+  };
+
+  return (
+    <div>
+      <h2 className="form-step-title" style={{ marginBottom: 'var(--space-4)' }}>Order Review & Rating</h2>
+      <div className="glass-card" style={{ padding: 'var(--space-6)' }}>
+        {loading ? (
+          <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Loading review…</div>
+        ) : feedback && !editing ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
+              <div style={{ display: 'flex', gap: '4px', color: '#F5A623', fontSize: '1.2rem' }}>
+                {[1, 2, 3, 4, 5].map(s => (
+                  <span key={s} style={{ color: s <= feedback.rating ? '#F5A623' : 'rgba(255,255,255,0.2)' }}>★</span>
+                ))}
+              </div>
+              <div style={{ display: 'inline-flex', gap: '6px' }}>
+                <button
+                  type="button"
+                  onClick={() => setEditing(true)}
+                  style={{ background: 'transparent', border: '1px solid var(--border-default)', color: 'var(--text-secondary)', padding: '4px 10px', borderRadius: 'var(--r-pill)', fontSize: '0.75rem', cursor: 'pointer' }}
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#ef4444', padding: '4px 10px', borderRadius: 'var(--r-pill)', fontSize: '0.75rem', cursor: 'pointer' }}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+
+            <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.5, background: 'var(--bg-surface)', padding: 'var(--space-3)', borderRadius: 'var(--r-md)' }}>
+              "{feedback.comment}"
+            </p>
+
+            {msg && <div style={{ fontSize: '0.8rem', color: '#22c55e' }}>✓ {msg}</div>}
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+            <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+              {editing ? 'Update your review for this dealer:' : 'Rate your dealer and service for this order:'}
+            </div>
+
+            <div style={{ display: 'inline-flex', gap: '6px' }}>
+              {[1, 2, 3, 4, 5].map(star => (
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() => setRating(star)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '1.4rem',
+                    color: star <= rating ? '#F5A623' : 'rgba(255, 255, 255, 0.2)',
+                    padding: 0,
+                  }}
+                >
+                  ★
+                </button>
+              ))}
+            </div>
+
+            <textarea
+              className="field-input"
+              rows={3}
+              placeholder="How was the dealer's service and gas pickup experience?"
+              value={comment}
+              onChange={e => setComment(e.target.value)}
+              required
+              style={{ width: '100%', boxSizing: 'border-box' }}
+            />
+
+            {msg && <div style={{ fontSize: '0.8rem', color: msg.startsWith('Thank') || msg.startsWith('Feedback') ? '#22c55e' : 'var(--color-error)' }}>{msg}</div>}
+
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button type="submit" className="btn-primary" disabled={submitting || !comment.trim()} style={{ padding: '8px 16px', fontSize: '0.85rem' }}>
+                {submitting ? 'Saving…' : editing ? 'Save Changes' : 'Submit Review'}
+              </button>
+              {editing && (
+                <button type="button" className="btn-secondary" onClick={() => setEditing(false)} style={{ padding: '8px 14px', fontSize: '0.85rem' }}>
+                  Cancel
+                </button>
+              )}
+            </div>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
+

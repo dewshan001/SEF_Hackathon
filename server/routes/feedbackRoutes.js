@@ -1,6 +1,7 @@
 import express from "express";
 import {
   getShopFeedbacks,
+  getOrderFeedback,
   createFeedback,
   updateFeedback,
   deleteFeedback,
@@ -11,6 +12,7 @@ const router = express.Router();
 
 // Public / Authenticated — view feedbacks of a shop
 router.get("/shop/:shopId", getShopFeedbacks);
+router.get("/order/:orderId", protect, getOrderFeedback);
 
 // Private — add feedback for a shop
 router.post("/shop/:shopId", protect, createFeedback);

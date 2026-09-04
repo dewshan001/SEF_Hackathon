@@ -25,6 +25,15 @@ const feedbackSchema = new mongoose.Schema(
       trim: true,
       maxlength: [1000, "Feedback comment cannot exceed 1000 characters"],
     },
+    orderId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Order",
+      required: false,
+    },
+    token: {
+      type: String,
+      required: false,
+    },
   },
   {
     timestamps: true,

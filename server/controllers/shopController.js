@@ -32,9 +32,18 @@ export const getShopById = async (req, res) => {
 // ── @access Private/ShopOwner
 export const getMyShop = async (req, res) => {
   try {
-    const shop = await Shop.findOne({ ownerId: req.user._id });
+    let shop = await Shop.findOne({ ownerId: req.user._id });
     if (!shop) {
-      return res.status(404).json({ message: "No shop found for this account" });
+      shop = await Shop.create({
+        ownerId: req.user._id,
+        shopName: `${req.user.name || "Gas"}'s Gas Store`,
+        contactNumber: req.user.phone || "0771234567",
+        address: req.user.address?.textAddress || "Colombo, Sri Lanka",
+        location: req.user.address || {
+          type: "Point",
+          coordinates: [79.8612, 6.9271],
+        },
+      });
     }
     res.json(shop);
   } catch (error) {

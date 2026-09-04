@@ -10,6 +10,7 @@ export const getShopFeedbacks = async (req, res) => {
     const { shopId } = req.params;
     const feedbacks = await Feedback.find({ shopId })
       .populate("customerId", "name email role")
+      .populate("orderId", "token status items totalAmount createdAt")
       .sort({ createdAt: -1 })
       .lean();
 
@@ -19,13 +20,29 @@ export const getShopFeedbacks = async (req, res) => {
   }
 };
 
-// ── @desc   Add feedback for a shop
+// ── @desc   Get feedback for a specific order
+// ── @route  GET /api/feedbacks/order/:orderId
+// ── @access Authenticated
+export const getOrderFeedback = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const feedback = await Feedback.findOne({ orderId })
+      .populate("customerId", "name email role")
+      .lean();
+
+    res.json(feedback || null);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// ── @desc   Add feedback for a shop / order
 // ── @route  POST /api/feedbacks/shop/:shopId
 // ── @access Private (Customer & Admin)
 export const createFeedback = async (req, res) => {
   try {
     const { shopId } = req.params;
-    const { rating, comment } = req.body;
+    const { rating, comment, orderId, token } = req.body;
 
     if (!rating || !comment || !comment.trim()) {
       return res.status(400).json({ message: "Rating and feedback comment are required" });
@@ -41,10 +58,13 @@ export const createFeedback = async (req, res) => {
       customerId: req.user._id,
       rating: Number(rating),
       comment: comment.trim(),
+      orderId: orderId || null,
+      token: token || null,
     });
 
     const populated = await Feedback.findById(feedback._id)
-      .populate("customerId", "name email role");
+      .populate("customerId", "name email role")
+      .populate("orderId", "token status items totalAmount");
 
     res.status(201).json(populated);
   } catch (error) {

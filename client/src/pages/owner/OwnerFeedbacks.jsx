@@ -40,12 +40,15 @@ export default function OwnerFeedbacks() {
       if (myShop && myShop._id) {
         const fbList = await getShopFeedbacks(myShop._id);
         setFeedbacks(Array.isArray(fbList) ? fbList : []);
+      } else {
+        setFeedbacks([]);
       }
     } catch (err) {
+      console.error('Owner feedbacks load error:', err);
       if (err?.status === 404) {
         setShop(null);
       } else {
-        setError('Unable to load reviews for your shop.');
+        setFeedbacks([]);
       }
     } finally {
       setLoading(false);
@@ -272,6 +275,11 @@ export default function OwnerFeedbacks() {
                           <span style={{ fontSize: '0.725rem', background: 'rgba(34, 197, 94, 0.1)', color: '#22c55e', padding: '2px 8px', borderRadius: 'var(--r-pill)', border: '1px solid rgba(34, 197, 94, 0.3)' }}>
                             Verified Customer
                           </span>
+                          {(fb.token || fb.orderId?.token) && (
+                            <span style={{ fontSize: '0.725rem', background: 'var(--brand-tint)', color: 'var(--brand-amber)', padding: '2px 8px', borderRadius: 'var(--r-pill)', border: '1px solid var(--brand-border-soft)', fontWeight: 600 }}>
+                              📦 Order #{fb.token || fb.orderId?.token}
+                            </span>
+                          )}
                         </div>
                         {fb.customerId?.email && (
                           <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
