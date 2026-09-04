@@ -27,6 +27,7 @@ export const registerRules = [
 
   body("phone")
     .trim()
+    .customSanitizer((val) => (typeof val === "string" ? val.replace(/[\s-]/g, "") : val))
     .notEmpty().withMessage("Phone number is required")
     .matches(/^(?:\+94|0)?(?:7[0-9])\d{7}$|^0\d{9}$/)
     .withMessage("Enter a valid Sri Lankan phone number (e.g. 077 123 4567)"),

@@ -71,7 +71,7 @@ export default function Register() {
         : '',
     address: !form.address
       ? 'Delivery address is required'
-      : form.address.trim().length < 8
+      : form.address.trim().length < 5
         ? 'Please enter a more complete address'
         : '',
     password: !form.password
@@ -84,11 +84,12 @@ export default function Register() {
       : form.confirmPassword !== form.password
         ? 'Passwords do not match'
         : '',
+    agreed: !agreed ? 'You must agree to the Terms of Service to continue' : '',
   };
 
   const step1Valid = !errors.name && !errors.email;
   const step2Valid = !errors.phone && !errors.address;
-  const step3Valid = !errors.password && !errors.confirmPassword && agreed;
+  const step3Valid = !errors.password && !errors.confirmPassword && !errors.agreed;
   const isValid = step1Valid && step2Valid && step3Valid;
 
   const setField = (field, value) => {
@@ -112,28 +113,57 @@ export default function Register() {
   const goBack = () => setStep(s => Math.max(1, s - 1));
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setTouched(t => ({ ...t, password: true, confirmPassword: true }));
-    if (!isValid) return;
+    if (e) e.preventDefault();
+    setTouched({
+      name: true,
+      email: true,
+      phone: true,
+      address: true,
+      password: true,
+      confirmPassword: true,
+      agreed: true,
+    });
+
+    if (!step1Valid) {
+      setStep(1);
+      return;
+    }
+    if (!step2Valid) {
+      setStep(2);
+      return;
+    }
+    if (!step3Valid) {
+      return;
+    }
 
     setStatus('loading');
     setServerError('');
 
+    const cleanPhone = form.phone ? form.phone.trim().replace(/[\s-]/g, '') : '';
+
     const result = await register({
-      name:     form.name,
-      email:    form.email,
-      phone:    form.phone,
-      address:  form.address,
+      name:     form.name.trim(),
+      email:    form.email.trim(),
+      phone:    cleanPhone,
+      address:  form.address.trim(),
       password: form.password,
       role:     form.role,
     });
 
     if (result.success) {
       setStatus('success');
-      setTimeout(() => navigate('/login'), 2000);
+      const target = form.role === 'SHOP_OWNER' ? '/shop-owner' : '/customer';
+      setTimeout(() => navigate(target), 1800);
     } else {
       setStatus('error');
       setServerError(result.message);
+      if (result.message && result.message.toLowerCase().includes('email')) {
+        setStep(1);
+        setTouched(t => ({ ...t, email: true }));
+      } else if (result.message && (result.message.toLowerCase().includes('phone') || result.message.toLowerCase().includes('address'))) {
+        setStep(2);
+        setTouched(t => ({ ...t, phone: true, address: true }));
+      }
     }
   };
 
@@ -151,11 +181,16 @@ export default function Register() {
               </div>
               <h2 className="success-title">Account Created!</h2>
               <p className="success-msg">
-                Welcome to GasGo Lanka, <strong>{form.name.split(' ')[0]}</strong>. You can now sign in and book your first cylinder.
+                Welcome to GasGo Lanka, <strong>{form.name.split(' ')[0]}</strong>. You are now signed in! Redirecting to your dashboard...
               </p>
-              <Link to="/login" className="btn-primary auth-submit-btn" id="register-continue-btn">
-                Continue to Sign In
-              </Link>
+              <button
+                type="button"
+                onClick={() => navigate(form.role === 'SHOP_OWNER' ? '/shop-owner' : '/customer')}
+                className="btn-primary auth-submit-btn"
+                id="register-continue-btn"
+              >
+                Go to Dashboard
+              </button>
             </div>
           </div>
         </div>
@@ -214,7 +249,20 @@ export default function Register() {
               </div>
             </div>
 
-            <form className="auth-form" onSubmit={handleSubmit} noValidate>
+            <form className="auth-form" onSubmit={(e) => {
+              e.preventDefault();
+              if (step === 1) goNext();
+              else if (step === 2) goNext();
+              else handleSubmit(e);
+            }} noValidate>
+              {serverError && step !== 3 && (
+                <div className="auth-server-error" role="alert" style={{ marginBottom: 16 }}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
+                  {serverError}
+                </div>
+              )}
               {step === 1 && (
                 <div className="form-step">
                   <h3 className="form-step-title">Let&apos;s start with the basics</h3>
@@ -418,17 +466,25 @@ export default function Register() {
                     )}
                   </div>
 
-                  <label className="terms-check">
+                  <label className={`terms-check ${touched.agreed && errors.agreed ? 'has-error' : ''}`}>
                     <input
                       type="checkbox"
                       checked={agreed}
-                      onChange={e => setAgreed(e.target.checked)}
+                      onChange={e => {
+                        setAgreed(e.target.checked);
+                        setTouched(t => ({ ...t, agreed: true }));
+                      }}
                     />
                     <span>
                       I agree to the <a href="#terms" className="terms-link">Terms of Service</a> and{' '}
                       <a href="#privacy" className="terms-link">Privacy Policy</a>.
                     </span>
                   </label>
+                  {touched.agreed && errors.agreed && (
+                    <span className="field-error" style={{ display: 'block', marginTop: '-8px', marginBottom: '14px' }}>
+                      {errors.agreed}
+                    </span>
+                  )}
 
                   {/* Server error banner — shown on step 3 */}
                   {serverError && (
@@ -446,10 +502,13 @@ export default function Register() {
                       type="submit"
                       className="btn-primary auth-submit-btn"
                       id="register-submit-btn"
-                      disabled={!isValid || status === 'loading'}
+                      disabled={status === 'loading'}
                     >
                       {status === 'loading' ? (
-                        <span className="btn-spinner" aria-hidden="true" />
+                        <>
+                          <span className="btn-spinner" aria-hidden="true" />
+                          Creating Account...
+                        </>
                       ) : (
                         <>
                           Create Account

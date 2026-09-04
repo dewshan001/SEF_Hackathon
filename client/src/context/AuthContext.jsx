@@ -53,15 +53,16 @@ export function AuthProvider({ children }) {
   // ── register ───────────────────────────────────────────────────────────
   const register = useCallback(async ({ name, email, phone, address, password, role }) => {
     try {
+      const cleanPhone = phone ? String(phone).trim().replace(/[\s-]/g, '') : phone;
       const payload = {
-        name,
-        email,
-        phone,
+        name: name ? String(name).trim() : '',
+        email: email ? String(email).trim() : '',
+        phone: cleanPhone,
         password,
         ...(role && { role }),
         ...(address && {
           address: {
-            textAddress: address,
+            textAddress: typeof address === 'string' ? address.trim() : address,
             coordinates: [0, 0], // coordinates updated later via map
           },
         }),
@@ -71,9 +72,13 @@ export function AuthProvider({ children }) {
       return { success: true, user: data };
     } catch (err) {
       const res = err.response?.data;
+      let errorMsg = res?.message || 'Registration failed. Please try again.';
+      if (res?.errors && Array.isArray(res.errors) && res.errors.length > 0) {
+        errorMsg = res.errors.map(e => e.message || `${e.field}: invalid`).join('. ');
+      }
       return {
         success: false,
-        message: res?.message || 'Registration failed. Please try again.',
+        message: errorMsg,
         fieldErrors: res?.errors || [],
       };
     }
