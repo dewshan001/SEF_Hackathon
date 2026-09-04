@@ -22,7 +22,6 @@ import adminRoutes from "./routes/adminRoutes.js";
 import shopRoutes from "./routes/shopRoutes.js";
 import cylinderRoutes from "./routes/cylinderRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
-import adminRoutes from "./routes/adminRoutes.js";
 import feedbackRoutes from "./routes/feedbackRoutes.js";
 
 dotenv.config();
@@ -46,7 +45,6 @@ app.use("/api/shops", shopRoutes);
 app.use("/api/cylinders", cylinderRoutes);
 app.use("/api/stocks", cylinderRoutes);
 app.use("/api/orders", orderRoutes);
-app.use("/api/admin", adminRoutes);
 app.use("/api/feedbacks", feedbackRoutes);
 
 // Health check
