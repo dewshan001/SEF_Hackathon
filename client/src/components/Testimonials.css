@@ -1,0 +1,168 @@
+/* ===================================================
+   Testimonials
+   =================================================== */
+.testimonials-section {
+  padding-block: var(--section-py);
+  position: relative;
+  background: var(--bg-surface);
+  overflow: hidden;
+  transition: background var(--dur-slow);
+}
+
+.test-bg-deco {
+  position: absolute;
+  top: -80px;
+  right: -80px;
+  width: min(500px, 70vw);
+  height: min(500px, 70vw);
+  background: radial-gradient(circle, rgba(245,166,35,.06) 0%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(60px);
+  pointer-events: none;
+}
+
+/* ── Grid ── */
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-5);
+  margin-bottom: var(--space-5);
+}
+
+/* ── Card ── */
+.testimonial-card {
+  padding: var(--space-8);
+  border-radius: var(--r-xl);
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: var(--glass-blur);
+  animation: fade-up .6s var(--delay, 0s) ease both;
+  transition: background var(--dur-slow), border-color var(--dur-slow);
+}
+
+.testimonial-card:hover { background: var(--glass-bg-hover); }
+
+.test-quote {
+  position: absolute;
+  top: 12px;
+  right: 20px;
+  font-size: 4.5rem;
+  font-family: var(--font-display);
+  font-weight: 900;
+  color: var(--brand-tint);
+  line-height: 1;
+  pointer-events: none;
+  transition: color var(--dur-slow);
+}
+
+.stars {
+  display: flex;
+  gap: 3px;
+  margin-bottom: var(--space-4);
+}
+
+.test-text {
+  font-family: var(--font-body);
+  font-size: .88rem;
+  color: var(--text-secondary);
+  line-height: 1.72;
+  margin-bottom: var(--space-5);
+  transition: color var(--dur-slow);
+}
+
+.test-author {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.test-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: .82rem;
+  flex-shrink: 0;
+}
+
+.test-name {
+  font-family: var(--font-display);
+  font-size: .9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 3px;
+  transition: color var(--dur-slow);
+}
+
+.test-location {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: .75rem;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  transition: color var(--dur-slow);
+}
+
+/* ── Overall rating ── */
+.overall-rating {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-6) var(--space-8);
+  border-radius: var(--r-xl);
+  flex-wrap: wrap;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: var(--glass-blur);
+  transition: background var(--dur-slow), border-color var(--dur-slow);
+}
+
+.rating-score {
+  font-family: var(--font-display);
+  font-size: 3.8rem;
+  font-weight: 900;
+  letter-spacing: -2px;
+  line-height: 1;
+}
+
+.rating-note {
+  font-size: .8rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-family: var(--font-body);
+  transition: color var(--dur-slow);
+}
+
+.rating-badges {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-inline-start: auto;
+}
+
+.r-badge {
+  padding: 8px 16px;
+  background: var(--brand-tint);
+  border: 1px solid var(--brand-border-soft);
+  border-radius: var(--r-pill);
+  font-size: .8rem;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-weight: 500;
+  transition: background var(--dur-slow), color var(--dur-slow);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .testimonials-grid { grid-template-columns: 1fr; }
+  .overall-rating { flex-direction: column; align-items: flex-start; gap: var(--space-4); }
+  .rating-badges  { margin-inline-start: 0; }
+}

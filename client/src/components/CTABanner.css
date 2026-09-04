@@ -1,0 +1,163 @@
+/* ===================================================
+   CTA Banner
+   =================================================== */
+.cta-section {
+  padding-block: var(--section-py);
+  background: var(--bg-base);
+  transition: background var(--dur-slow);
+}
+
+.cta-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--r-2xl);
+  padding: var(--space-16) var(--space-16);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-12);
+  border: 1px solid var(--brand-border-soft);
+  background: color-mix(in srgb, var(--brand-primary) 5%, var(--bg-surface));
+  transition: background var(--dur-slow), border-color var(--dur-slow);
+}
+
+/* ── Orbs ── */
+.cta-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+.cta-orb-1 {
+  width: min(500px, 70vw);
+  height: min(500px, 70vw);
+  background: radial-gradient(circle, rgba(232,93,26,.18) 0%, transparent 70%);
+  top: -200px;
+  left: -100px;
+  animation: orb-drift 12s ease-in-out infinite alternate;
+}
+
+.cta-orb-2 {
+  width: min(380px, 60vw);
+  height: min(380px, 60vw);
+  background: radial-gradient(circle, rgba(245,166,35,.10) 0%, transparent 70%);
+  bottom: -150px;
+  right: 120px;
+  animation: orb-drift 9s ease-in-out infinite alternate-reverse;
+}
+
+/* ── Grid ── */
+.cta-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border-subtle) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse 100% 100% at 50% 50%, black 20%, transparent);
+  pointer-events: none;
+}
+
+/* ── Content ── */
+.cta-inner {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+}
+
+.cta-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 4vw, 2.85rem);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  color: var(--text-primary);
+  margin-bottom: var(--space-4);
+  transition: color var(--dur-slow);
+}
+
+.cta-sub {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-width: 440px;
+  margin-bottom: var(--space-8);
+  transition: color var(--dur-slow);
+}
+
+.cta-actions {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-8);
+}
+
+.cta-btn { padding: 14px 28px; font-size: .95rem; }
+
+/* ── Mini stats ── */
+.cta-mini-stats {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+}
+
+.mini-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mini-value {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--brand-amber);
+  letter-spacing: -.5px;
+}
+
+.mini-label {
+  font-size: .72rem;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  transition: color var(--dur-slow);
+}
+
+.mini-divider {
+  width: 1px;
+  height: 32px;
+  background: var(--border-default);
+}
+
+/* ── Visual ── */
+.cta-visual {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+.cta-flame {
+  animation: float-y 4s ease-in-out infinite;
+  filter: drop-shadow(0 20px 40px rgba(232,93,26,.4));
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .cta-card {
+    flex-direction: column;
+    padding: var(--space-10) var(--space-8);
+    text-align: center;
+  }
+  .cta-actions      { justify-content: center; }
+  .cta-mini-stats   { justify-content: center; }
+  .cta-visual       { display: none; }
+  .cta-sub          { max-width: 100%; }
+}
+
+@media (max-width: 540px) {
+  .cta-card { padding: var(--space-8) var(--space-6); }
+  .cta-actions { flex-direction: column; align-items: stretch; }
+  .cta-btn { justify-content: center; }
+}

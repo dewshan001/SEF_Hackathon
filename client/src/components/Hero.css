@@ -1,0 +1,324 @@
+/* ===================================================
+   Hero Section
+   =================================================== */
+.hero-section {
+  min-height: 100svh;
+  padding-top: calc(var(--navbar-h) + var(--space-12));
+  padding-bottom: var(--space-16);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: opacity .1s linear;
+}
+
+/* ── Background orbs ── */
+.orbs-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+.hero-orb-1 {
+  width: min(600px, 80vw);
+  height: min(600px, 80vw);
+  top: -15%;
+  left: -8%;
+  background: radial-gradient(circle, rgba(232,93,26,.18) 0%, transparent 70%);
+  animation: orb-drift 9s ease-in-out infinite alternate;
+}
+
+.hero-orb-2 {
+  width: min(420px, 60vw);
+  height: min(420px, 60vw);
+  top: 45%;
+  right: 5%;
+  background: radial-gradient(circle, rgba(245,166,35,.13) 0%, transparent 70%);
+  animation: orb-drift 13s ease-in-out infinite alternate-reverse;
+}
+
+.hero-orb-3 {
+  width: min(300px, 50vw);
+  height: min(300px, 50vw);
+  bottom: 10%;
+  left: 30%;
+  background: radial-gradient(circle, rgba(45,155,78,.08) 0%, transparent 70%);
+  animation: orb-drift 16s ease-in-out infinite alternate;
+}
+
+/* ── Grid overlay ── */
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border-subtle) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 72% 60% at 50% 40%, black, transparent);
+  pointer-events: none;
+}
+
+/* ── Two-column layout ── */
+.hero-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: var(--space-16);
+}
+
+/* ── Text side ── */
+.hero-text {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5.5vw, 4rem);
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: -2px;
+  color: var(--text-primary);
+  margin-bottom: var(--space-6);
+  animation: fade-up .75s .05s var(--ease-spring) both;
+  transition: color var(--dur-slow);
+}
+
+.hero-subtitle {
+  font-family: var(--font-body);
+  font-size: clamp(.9rem, 1.6vw, 1.075rem);
+  color: var(--text-secondary);
+  line-height: 1.75;
+  max-width: 460px;
+  margin-bottom: var(--space-10);
+  animation: fade-up .75s .15s var(--ease-spring) both;
+  transition: color var(--dur-slow);
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-8);
+  animation: fade-up .75s .25s var(--ease-spring) both;
+}
+
+/* ── Trust badges ── */
+.trust-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+  animation: fade-up .75s .35s var(--ease-spring) both;
+}
+
+.trust-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .82rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  transition: color var(--dur-slow);
+}
+
+.trust-badge svg { flex-shrink: 0; }
+
+/* ── Visual side (cylinder) ── */
+.hero-visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  animation: fade-in .9s .2s ease both;
+}
+
+.cylinder-stage {
+  position: relative;
+  width: clamp(200px, 28vw, 300px);
+  height: auto;
+  transition: transform .15s ease-out;
+  transform-style: preserve-3d;
+}
+
+.cylinder-glow {
+  position: absolute;
+  bottom: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  height: 70px;
+  background: radial-gradient(ellipse, rgba(232,93,26,.55) 0%, transparent 70%);
+  filter: blur(18px);
+  pointer-events: none;
+  animation: glow-pulse 3s ease-in-out infinite alternate;
+}
+
+.cylinder-svg {
+  width: 100%;
+  height: auto;
+  filter:
+    drop-shadow(0 24px 48px rgba(232,93,26,.32))
+    drop-shadow(0  8px 16px rgba(0,0,0,.35));
+  animation: float-y 5s ease-in-out infinite;
+}
+
+/* ── Floating info badges ── */
+.float-badge {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 10px 16px;
+  border-radius: var(--r-lg);
+  white-space: nowrap;
+  cursor: default;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-md);
+}
+
+.float-badge .badge-icon {
+  font-size: 1.35rem;
+  flex-shrink: 0;
+}
+
+.badge-value {
+  font-family: var(--font-display);
+  font-size: .9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+  transition: color var(--dur-slow);
+}
+
+.badge-sub {
+  font-size: .7rem;
+  color: var(--text-muted);
+  margin-top: 3px;
+  transition: color var(--dur-slow);
+}
+
+.badge-tl {
+  top: 5%;
+  left: -18%;
+  animation: float-y 4s ease-in-out infinite;
+}
+
+.badge-tr {
+  top: 5%;
+  right: -18%;
+  animation: float-y 4s 1.4s ease-in-out infinite;
+}
+
+.badge-bc {
+  bottom: 12%;
+  left: 50%;
+  animation: float-center 4s 2.8s ease-in-out infinite;
+}
+
+/* ── Stats bar ── */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+  margin-top: var(--space-16);
+}
+
+.stat-item {
+  padding: var(--space-6) var(--space-5);
+  text-align: center;
+  border-radius: var(--r-xl);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  backdrop-filter: blur(14px);
+  animation: fade-up .65s calc(var(--i, 0) * .1s + .4s) ease both;
+  transition: background var(--dur-slow), border-color var(--dur-slow);
+}
+
+.stat-value {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  font-weight: 900;
+  letter-spacing: -1px;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.stat-label {
+  font-size: .8rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  transition: color var(--dur-slow);
+}
+
+/* ── Scroll indicator ── */
+.scroll-indicator {
+  position: absolute;
+  bottom: var(--space-6);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-muted);
+  font-size: .72rem;
+  font-weight: 500;
+  letter-spacing: .05em;
+  animation: fade-in 1s 1.2s ease both;
+  pointer-events: none;
+}
+
+.scroll-mouse {
+  width: 22px;
+  height: 36px;
+  border: 2px solid var(--border-default);
+  border-radius: 11px;
+  display: flex;
+  justify-content: center;
+  padding-top: 6px;
+}
+
+.scroll-wheel {
+  width: 4px;
+  height: 8px;
+  background: var(--brand-primary);
+  border-radius: 2px;
+  animation: scroll-wheel 2s ease infinite;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .hero-inner {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: var(--space-12);
+  }
+  .hero-subtitle  { max-width: 100%; margin-inline: auto; }
+  .hero-actions   { justify-content: center; }
+  .trust-badges   { justify-content: center; }
+  .stats-bar      { grid-template-columns: repeat(2, 1fr); }
+  .cylinder-stage { width: clamp(180px, 55vw, 240px); }
+  .badge-tl       { left: 0; }
+  .badge-tr       { right: 0; }
+}
+
+@media (max-width: 540px) {
+  .stats-bar { grid-template-columns: 1fr 1fr; }
+  .hero-title { letter-spacing: -1px; }
+  .hero-actions { flex-direction: column; align-items: stretch; }
+  .hero-actions .btn-primary,
+  .hero-actions .btn-secondary { justify-content: center; }
+}
