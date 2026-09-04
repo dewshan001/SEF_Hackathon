@@ -5,13 +5,13 @@ import {
   getShopOrders,
   updateOrderStatus,
 } from "../controllers/orderController.js";
-import { protect, authorize } from "../middleware/authMiddleware.js";
+import { protect, shopOwnerOnly, customerOnly } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", protect, authorize("CUSTOMER"), createOrder);
-router.get("/mine", protect, authorize("CUSTOMER"), getMyOrders);
-router.get("/shop", protect, authorize("SHOP_OWNER"), getShopOrders);
-router.put("/:id/status", protect, authorize("SHOP_OWNER"), updateOrderStatus);
+router.post("/", protect, customerOnly, createOrder);
+router.get("/mine", protect, customerOnly, getMyOrders);
+router.get("/shop", protect, shopOwnerOnly, getShopOrders);
+router.put("/:id/status", protect, shopOwnerOnly, updateOrderStatus);
 
 export default router;

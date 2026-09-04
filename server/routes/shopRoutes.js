@@ -1,10 +1,10 @@
 import express from "express";
 import { getMyShop, createShop } from "../controllers/shopController.js";
-import { protect, authorize } from "../middleware/authMiddleware.js";
+import { protect, shopOwnerOnly } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/mine", protect, authorize("SHOP_OWNER"), getMyShop);
-router.post("/", protect, authorize("SHOP_OWNER"), createShop);
+router.get("/mine", protect, shopOwnerOnly, getMyShop);
+router.post("/", protect, shopOwnerOnly, createShop);
 
 export default router;

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import './Dashboard.css';
 import './CustomerDashboard.css';
-import { MOCK_CUSTOMER } from '../api/mockUsers';
+import { useAuth } from '../context/AuthContext';
 import { getStocks } from '../api/stocks';
 import { getMyOrders, createOrder } from '../api/orders';
 import { ApiError } from '../api/client';
@@ -13,6 +13,7 @@ function formatLKR(amount) {
 }
 
 export default function CustomerDashboard() {
+  const { user } = useAuth();
   const [stocks, setStocks] = useState([]);
   const [stocksState, setStocksState] = useState('loading'); // loading | error | ready
   const [brandFilter, setBrandFilter] = useState('all');
@@ -74,7 +75,7 @@ export default function CustomerDashboard() {
         <header className="cust-dash-header">
           <div className="section-label"><span className="dot" />Customer Portal</div>
           <h1 className="section-title" style={{ textAlign: 'left' }}>
-            Welcome back, <span className="gradient-text">{MOCK_CUSTOMER.name.split(' ')[0]}</span>
+            Welcome back, <span className="gradient-text">{user?.name?.split(' ')[0] || 'there'}</span>
           </h1>
           <p className="section-subtitle" style={{ textAlign: 'left' }}>
             Browse available LP gas stock near you and book a cylinder in seconds.

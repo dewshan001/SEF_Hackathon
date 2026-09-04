@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './Dashboard.css';
 import './ShopOwnerDashboard.css';
-import { MOCK_SHOP_OWNER } from '../api/mockUsers';
+import { useAuth } from '../context/AuthContext';
 import { getMyShop, createShop } from '../api/shops';
 import { getMyStocks, deleteStock } from '../api/stocks';
 import { getShopOrders, updateOrderStatus } from '../api/orders';
@@ -15,6 +15,7 @@ function formatLKR(amount) {
 }
 
 export default function ShopOwnerDashboard() {
+  const { user } = useAuth();
   const [shop, setShop] = useState(null);
   const [shopState, setShopState] = useState('loading'); // loading | error | ready
 
@@ -98,7 +99,7 @@ export default function ShopOwnerDashboard() {
         <header className="owner-dash-header">
           <div className="section-label"><span className="dot" />Shop Owner Portal</div>
           <h1 className="section-title" style={{ textAlign: 'left' }}>
-            Welcome back, <span className="gradient-text">{MOCK_SHOP_OWNER.name.split(' ')[0]}</span>
+            Welcome back, <span className="gradient-text">{user?.name?.split(' ')[0] || 'there'}</span>
           </h1>
           <p className="section-subtitle" style={{ textAlign: 'left' }}>
             Manage your shop, keep your stock up to date, and track incoming bookings.

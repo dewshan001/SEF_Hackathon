@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Name is required"],
       trim: true,
+      minlength: [2, "Name must be at least 2 characters"],
     },
     email: {
       type: String,
@@ -14,25 +15,38 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
+      match: [/^\S+@\S+\.\S+$/, "Please provide a valid email address"],
     },
     password: {
       type: String,
       required: [true, "Password is required"],
-      minlength: 6,
+      minlength: [6, "Password must be at least 6 characters"],
     },
     role: {
       type: String,
-      enum: ["ADMIN", "SHOP_OWNER", "CUSTOMER"],
+      enum: {
+        values: ["ADMIN", "SHOP_OWNER", "CUSTOMER"],
+        message: "Role must be ADMIN, SHOP_OWNER, or CUSTOMER",
+      },
       default: "CUSTOMER",
     },
     phone: {
       type: String,
-      required: [true, "Phone is required"],
+      required: [true, "Phone number is required"],
+      trim: true,
+      match: [
+        /^(?:\+94|0)?(?:7[0-9])\d{7}$|^0\d{9}$/,
+        "Please provide a valid Sri Lankan phone number",
+      ],
     },
+
+    // Push notification token (web / mobile)
     pushToken: {
       type: String,
       default: null,
     },
+
+    // GeoJSON address — used for customer delivery location
     address: {
       type: {
         type: String,
@@ -40,15 +54,19 @@ const userSchema = new mongoose.Schema(
         default: "Point",
       },
       coordinates: {
-        type: [Number],
+        type: [Number], // [longitude, latitude]
         default: [0, 0],
       },
-      textAddress: { type: String },
+      textAddress: {
+        type: String,
+        trim: true,
+      },
     },
   },
   { timestamps: true }
 );
 
+// 2dsphere index for geospatial queries
 userSchema.index({ address: "2dsphere" });
 
 // Hash password before saving
@@ -59,12 +77,12 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-// Compare password method
+// Instance method: compare plain password to hashed
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-// Remove password from JSON output
+// Strip password from all JSON responses
 userSchema.methods.toJSON = function () {
   const obj = this.toObject();
   delete obj.password;

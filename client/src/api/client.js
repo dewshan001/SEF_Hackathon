@@ -10,11 +10,17 @@ export class ApiError extends Error {
 }
 
 async function request(path, { method = 'GET', body, headers } = {}) {
+  const token = localStorage.getItem('gasgo-token');
+
   let res;
   try {
     res = await fetch(`${BASE_URL}${path}`, {
       method,
-      headers: { 'Content-Type': 'application/json', ...headers },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...headers,
+      },
       body: body !== undefined ? JSON.stringify(body) : undefined,
     });
   } catch {
