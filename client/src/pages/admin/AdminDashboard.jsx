@@ -801,8 +801,6 @@ function SettingsSection({ user, toast }) {
   const [saving, setSaving] = useState(false);
   const pwStrength = getPasswordStrength(form.newPw);
 
-  const dbConnected = true; // In real app, use an API ping
-
   const validate = () => {
     const e = {};
     if (!form.current) e.current = 'Current password is required';
@@ -817,7 +815,7 @@ function SettingsSection({ user, toast }) {
     if (Object.keys(errs).length) { setErrors(errs); return; }
     setSaving(true);
     try {
-      await api.put('/users/profile', { password: form.newPw });
+      await api.put('/users/change-password', { password: form.newPw });
       toast('success', 'Password changed successfully!');
       setForm({ current: '', newPw: '', confirm: '' });
       setErrors({});

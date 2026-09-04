@@ -12,6 +12,41 @@ export const getUsers = async (req, res) => {
   }
 };
 
+// @desc    Create a user
+// @route   POST /api/users
+// @access  Private/Admin
+export const createUser = async (req, res) => {
+  try {
+    const { name, email, password, phone, role, address } = req.body;
+
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      return res.status(409).json({ message: "An account with that email already exists" });
+    }
+
+    const userData = { name, email, password, phone, role };
+
+    if (address) {
+      userData.address = {
+        type: "Point",
+        coordinates: address.coordinates || [0, 0],
+        textAddress: address.textAddress || "",
+      };
+    }
+
+    const user = await User.create(userData);
+
+    res.status(201).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // @desc    Get user by ID
 // @route   GET /api/users/:id
 // @access  Private/Admin
@@ -46,6 +81,26 @@ export const updateProfile = async (req, res) => {
       email: updatedUser.email,
       role: updatedUser.role,
     });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Change Admin Password
+// @route   PUT /api/users/change-password
+// @access  Private/Admin
+export const changeAdminPassword = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (req.body.password) {
+      user.password = req.body.password;
+      await user.save();
+      res.json({ message: "Password updated successfully" });
+    } else {
+      res.status(400).json({ message: "Password is required" });
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
