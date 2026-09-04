@@ -1,10 +1,24 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
+
+const ROLE_DASHBOARD = {
+  CUSTOMER: '/customer',
+  SHOP_OWNER: '/shop-owner',
+};
 
 export default function Navbar({ theme, onToggleTheme }) {
   const navRef   = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const { isAuthenticated, user, role, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    setMenuOpen(false);
+    navigate('/');
+  };
 
   useEffect(() => {
     const onScroll = () => {
@@ -101,8 +115,21 @@ export default function Navbar({ theme, onToggleTheme }) {
             )}
           </button>
 
-          <Link to="/login" className="btn-secondary nav-btn" id="nav-signin-btn">Sign In</Link>
-          <a href="#book" className="btn-primary  nav-btn" id="nav-book-btn">Book Now</a>
+          {isAuthenticated ? (
+            <>
+              <Link to={ROLE_DASHBOARD[role] || '/'} className="btn-secondary nav-btn" id="nav-dashboard-btn">
+                {user?.name?.split(' ')[0] || 'Dashboard'}
+              </Link>
+              <button type="button" className="btn-primary nav-btn" id="nav-logout-btn" onClick={handleLogout}>
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="btn-secondary nav-btn" id="nav-signin-btn">Sign In</Link>
+              <a href="#book" className="btn-primary  nav-btn" id="nav-book-btn">Book Now</a>
+            </>
+          )}
         </div>
 
         {/* ── Hamburger ── */}

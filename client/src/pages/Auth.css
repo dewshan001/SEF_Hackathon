@@ -546,6 +546,83 @@
 
 .field-textarea { min-height: 80px; }
 
+/* ── Role picker ── */
+.role-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.role-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border-default);
+  background: var(--bg-elevated);
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast),
+    background   var(--dur-fast),
+    box-shadow   var(--dur-fast);
+  position: relative;
+}
+
+.role-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.role-option:hover {
+  border-color: var(--brand-border-soft);
+  background: var(--brand-tint);
+}
+
+.role-option.selected {
+  border-color: var(--brand-primary);
+  background: var(--brand-tint);
+  box-shadow: 0 0 0 1px rgba(232,93,26,.2);
+}
+
+.role-opt-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.role-opt-label {
+  font-family: var(--font-display);
+  font-size: .85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  transition: color var(--dur-slow);
+}
+
+.role-opt-desc {
+  font-size: .74rem;
+  color: var(--text-muted);
+  transition: color var(--dur-slow);
+}
+
+.role-opt-check {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--brand-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0);
+  transition: all var(--dur-base) var(--ease-spring);
+  flex-shrink: 0;
+}
+
+.role-option.selected .role-opt-check { opacity: 1; transform: scale(1); }
+
 .field-error {
   display: block;
   margin-top: 6px;

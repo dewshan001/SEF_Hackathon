@@ -16,7 +16,21 @@ const initialForm = {
   address: '',
   password: '',
   confirmPassword: '',
+  role: 'CUSTOMER',
 };
+
+const ROLES = [
+  {
+    id: 'CUSTOMER',
+    label: 'Customer',
+    desc: 'Browse stock and book gas cylinders',
+  },
+  {
+    id: 'SHOP_OWNER',
+    label: 'Shop Owner',
+    desc: 'List stock and manage bookings',
+  },
+];
 
 const STEPS = [
   { n: 1, label: 'Account' },
@@ -111,6 +125,7 @@ export default function Register() {
       phone:    form.phone,
       address:  form.address,
       password: form.password,
+      role:     form.role,
     });
 
     if (result.success) {
@@ -235,6 +250,37 @@ export default function Register() {
                     />
                     {touched.email && !errors.email && form.email && <FieldCheck />}
                     {touched.email && errors.email && <span className="field-error">{errors.email}</span>}
+                  </div>
+
+                  <div className="field-group">
+                    <label className="field-label" htmlFor="reg-role-customer">I want to register as</label>
+                    <div className="role-options" role="radiogroup" aria-label="Account type">
+                      {ROLES.map(r => (
+                        <label
+                          key={r.id}
+                          className={`role-option ${form.role === r.id ? 'selected' : ''}`}
+                          htmlFor={`reg-role-${r.id}`}
+                        >
+                          <input
+                            type="radio"
+                            id={`reg-role-${r.id}`}
+                            name="role"
+                            value={r.id}
+                            checked={form.role === r.id}
+                            onChange={() => setField('role', r.id)}
+                          />
+                          <div className="role-opt-info">
+                            <span className="role-opt-label">{r.label}</span>
+                            <span className="role-opt-desc">{r.desc}</span>
+                          </div>
+                          <div className="role-opt-check">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" aria-hidden="true">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
                   </div>
 
                   <button

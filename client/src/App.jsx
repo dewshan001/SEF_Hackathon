@@ -12,6 +12,9 @@ import Footer from './components/Footer';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import CustomerDashboard from './pages/CustomerDashboard';
+import ShopOwnerDashboard from './pages/ShopOwnerDashboard';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Routes where the top Navbar should be hidden
 const NO_NAVBAR_ROUTES = ['/login', '/register'];
@@ -58,6 +61,24 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/*" element={<AdminDashboard />} />
+        <Route
+          path="/customer"
+          element={
+            <ProtectedRoute role="CUSTOMER">
+              <main><CustomerDashboard /></main>
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/shop-owner"
+          element={
+            <ProtectedRoute role="SHOP_OWNER">
+              <main><ShopOwnerDashboard /></main>
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </div>
   );

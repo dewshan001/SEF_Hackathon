@@ -53,9 +53,9 @@ export default function Login() {
       // Redirect based on role
       const role = result.user?.role;
       setTimeout(() => {
-        if (role === 'ADMIN')      navigate('/admin');
-        else if (role === 'SHOP_OWNER') navigate('/shop');
-        else                       navigate('/');
+        if (role === 'SHOP_OWNER')      navigate('/shop-owner');
+        else if (role === 'CUSTOMER')   navigate('/customer');
+        else                             navigate('/');
       }, 1200);
     } else {
       setStatus('error');
