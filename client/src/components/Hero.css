@@ -113,6 +113,54 @@
   animation: fade-up .75s .25s var(--ease-spring) both;
 }
 
+.btn-feedback {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 12px 24px;
+  background: var(--glass-bg);
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--r-pill);
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform var(--dur-base) var(--ease-spring),
+    box-shadow var(--dur-base) var(--ease-smooth),
+    background var(--dur-fast),
+    border-color var(--dur-fast),
+    color var(--dur-fast);
+  white-space: nowrap;
+}
+
+.btn-feedback svg {
+  color: var(--brand-amber);
+  transition: transform var(--dur-fast) var(--ease-spring);
+}
+
+.btn-feedback:hover {
+  background: var(--brand-tint);
+  border-color: var(--brand-primary);
+  color: var(--brand-amber);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(232, 93, 26, 0.25);
+}
+
+.btn-feedback:hover svg {
+  transform: scale(1.15) rotate(-5deg);
+}
+
+.btn-feedback:active {
+  transform: translateY(0);
+}
+
+
 /* ── Trust badges ── */
 .trust-badges {
   display: flex;

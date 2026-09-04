@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import './Navbar.css';
 
-export default function Navbar({ theme, onToggleTheme }) {
+export default function Navbar({ theme, onToggleTheme, currentPage = 'home', onNavigate }) {
   const navRef   = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -13,8 +13,23 @@ export default function Navbar({ theme, onToggleTheme }) {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Close menu on link click
-  const handleNavClick = () => setMenuOpen(false);
+  const handleNavClick = (id, href, e) => {
+    setMenuOpen(false);
+    if (id === 'feedback') {
+      e.preventDefault();
+      if (onNavigate) onNavigate('feedback');
+      else window.location.hash = 'feedback';
+    } else if (currentPage === 'feedback') {
+      e.preventDefault();
+      if (onNavigate) onNavigate('home');
+      setTimeout(() => {
+        const target = document.querySelector(href);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  };
 
   const isDark = theme === 'dark';
 
@@ -23,7 +38,16 @@ export default function Navbar({ theme, onToggleTheme }) {
       <div className="nav-inner container">
 
         {/* ── Logo ── */}
-        <a href="#" className="nav-logo" aria-label="GasGo Lanka home">
+        <a
+          href="#"
+          className="nav-logo"
+          aria-label="GasGo Lanka home"
+          onClick={(e) => {
+            e.preventDefault();
+            if (onNavigate) onNavigate('home');
+            else window.location.hash = '';
+          }}
+        >
           <div className="logo-mark" aria-hidden="true">
             <svg width="24" height="24" viewBox="0 0 32 38" fill="none" xmlns="http://www.w3.org/2000/svg">
               <ellipse cx="16" cy="30" rx="10" ry="4"  fill="url(#nl-bot)" />
@@ -58,13 +82,20 @@ export default function Navbar({ theme, onToggleTheme }) {
         {/* ── Desktop Links ── */}
         <ul className={`nav-links ${menuOpen ? 'is-open' : ''}`} role="list">
           {[
-            { label: 'Features',      href: '#features'      },
-            { label: 'How It Works',  href: '#how-it-works'  },
-            { label: 'Stores',        href: '#stores'        },
-            { label: 'Book Now',      href: '#book'          },
-          ].map(({ label, href }) => (
+            { label: 'Features',      href: '#features',     id: 'features' },
+            { label: 'How It Works',  href: '#how-it-works', id: 'how-it-works' },
+            { label: 'Stores',        href: '#stores',       id: 'stores' },
+            { label: 'Book Now',      href: '#book',         id: 'book' },
+            { label: 'Feedback',      href: '#feedback',     id: 'feedback' },
+          ].map(({ label, href, id }) => (
             <li key={label}>
-              <a href={href} className="nav-link" onClick={handleNavClick}>{label}</a>
+              <a
+                href={href}
+                className={`nav-link ${currentPage === id ? 'active' : ''}`}
+                onClick={(e) => handleNavClick(id, href, e)}
+              >
+                {label}
+              </a>
             </li>
           ))}
         </ul>

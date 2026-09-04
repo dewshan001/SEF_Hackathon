@@ -1,6 +1,6 @@
 import './Footer.css';
 
-export default function Footer() {
+export default function Footer({ onNavigate }) {
   return (
     <footer className="footer" id="footer">
       <div className="footer-glow" aria-hidden="true" />
@@ -83,6 +83,20 @@ export default function Footer() {
         <div className="footer-links-group">
           <h4 className="footer-heading">Support</h4>
           <ul>
+            <li>
+              <a
+                href="#feedback"
+                className="footer-link"
+                id="footer-feedback-link"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (onNavigate) onNavigate('feedback');
+                  else window.location.hash = 'feedback';
+                }}
+              >
+                Share Feedback
+              </a>
+            </li>
             {['Help Center', 'Safety Guidelines', 'Terms of Service', 'Privacy Policy', 'Refund Policy'].map(l => (
               <li key={l}><a href="#" className="footer-link">{l}</a></li>
             ))}

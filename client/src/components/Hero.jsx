@@ -8,7 +8,7 @@ const STATS = [
   { value: '30min', label: 'Avg. Delivery',     i: 3 },
 ];
 
-export default function Hero() {
+export default function Hero({ onNavigate }) {
   const [mouse, setMouse]   = useState({ x: 0, y: 0 });
   const [scrollY, setScrollY] = useState(0);
   const heroRef = useRef(null);
@@ -83,6 +83,17 @@ export default function Hero() {
               </svg>
               See How It Works
             </a>
+            <button
+              onClick={() => onNavigate ? onNavigate('feedback') : (window.location.hash = 'feedback')}
+              className="btn-feedback"
+              id="hero-feedback-btn"
+              aria-label="Share Feedback"
+            >
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+              Share Feedback
+            </button>
           </div>
 
           <div className="trust-badges">
