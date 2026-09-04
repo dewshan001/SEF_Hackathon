@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import './Navbar.css';
 
 export default function Navbar({ theme, onToggleTheme }) {
@@ -23,7 +24,7 @@ export default function Navbar({ theme, onToggleTheme }) {
       <div className="nav-inner container">
 
         {/* ── Logo ── */}
-        <a href="#" className="nav-logo" aria-label="GasGo Lanka home">
+        <Link to="/" className="nav-logo" aria-label="GasGo Lanka home">
           <div className="logo-mark" aria-hidden="true">
             <svg width="24" height="24" viewBox="0 0 32 38" fill="none" xmlns="http://www.w3.org/2000/svg">
               <ellipse cx="16" cy="30" rx="10" ry="4"  fill="url(#nl-bot)" />
@@ -53,7 +54,7 @@ export default function Navbar({ theme, onToggleTheme }) {
           <span className="logo-text">
             GasGo <span className="logo-accent">Lanka</span>
           </span>
-        </a>
+        </Link>
 
         {/* ── Desktop Links ── */}
         <ul className={`nav-links ${menuOpen ? 'is-open' : ''}`} role="list">
@@ -62,9 +63,15 @@ export default function Navbar({ theme, onToggleTheme }) {
             { label: 'How It Works',  href: '#how-it-works'  },
             { label: 'Stores',        href: '#stores'        },
             { label: 'Book Now',      href: '#book'          },
-          ].map(({ label, href }) => (
+            { label: 'Customer',      to: '/customer'        },
+            { label: 'Shop Owner',    to: '/shop-owner'       },
+          ].map(({ label, href, to }) => (
             <li key={label}>
-              <a href={href} className="nav-link" onClick={handleNavClick}>{label}</a>
+              {to ? (
+                <Link to={to} className="nav-link" onClick={handleNavClick}>{label}</Link>
+              ) : (
+                <a href={href} className="nav-link" onClick={handleNavClick}>{label}</a>
+              )}
             </li>
           ))}
         </ul>
