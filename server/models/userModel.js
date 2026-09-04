@@ -22,12 +22,34 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["user", "admin"],
-      default: "user",
+      enum: ["ADMIN", "SHOP_OWNER", "CUSTOMER"],
+      default: "CUSTOMER",
+    },
+    phone: {
+      type: String,
+      required: [true, "Phone is required"],
+    },
+    pushToken: {
+      type: String,
+      default: null,
+    },
+    address: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+      },
+      coordinates: {
+        type: [Number],
+        default: [0, 0],
+      },
+      textAddress: { type: String },
     },
   },
   { timestamps: true }
 );
+
+userSchema.index({ address: "2dsphere" });
 
 // Hash password before saving
 userSchema.pre("save", async function (next) {

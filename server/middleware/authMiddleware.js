@@ -23,9 +23,18 @@ export const protect = async (req, res, next) => {
 
 // Admin only middleware
 export const admin = (req, res, next) => {
-  if (req.user && req.user.role === "admin") {
+  if (req.user && req.user.role === "ADMIN") {
     next();
   } else {
     res.status(403).json({ message: "Not authorized as admin" });
+  }
+};
+
+// Restrict a route to one or more roles, e.g. authorize("SHOP_OWNER")
+export const authorize = (...roles) => (req, res, next) => {
+  if (req.user && roles.includes(req.user.role)) {
+    next();
+  } else {
+    res.status(403).json({ message: `Not authorized as ${roles.join(" or ")}` });
   }
 };
