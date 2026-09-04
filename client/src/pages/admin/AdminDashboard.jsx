@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Fragment } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../utils/api';
@@ -124,13 +124,8 @@ const MOCK_OWNERS = [
   { _id: 'o3', name: 'Colombo Cylinders', email: 'colombo@cyl.lk', phone: '0114567890', role: 'SHOP_OWNER', createdAt: '2026-08-01T10:00:00Z', address: { textAddress: 'Dehiwala' } },
 ];
 
-const MOCK_ORDERS = [
-  { _id: 'ord001', customer: 'Nimal Perera',  owner: 'Ruwan Gas Store',   cylinders: 1, amount: 'LKR 3,400', status: 'delivered', createdAt: '2026-09-03T10:00:00Z' },
-  { _id: 'ord002', customer: 'Sanduni Silva', owner: 'Lanka Gas Hub',      cylinders: 2, amount: 'LKR 6,800', status: 'pending',   createdAt: '2026-09-04T08:30:00Z' },
-  { _id: 'ord003', customer: 'Kamal Fernando',owner: 'Colombo Cylinders',  cylinders: 1, amount: 'LKR 3,400', status: 'delivered', createdAt: '2026-09-02T14:00:00Z' },
-  { _id: 'ord004', customer: 'Priya Wickrama',owner: 'Ruwan Gas Store',    cylinders: 3, amount: 'LKR 10,200',status: 'cancelled', createdAt: '2026-09-01T16:00:00Z' },
-  { _id: 'ord005', customer: 'Nimal Perera',  owner: 'Lanka Gas Hub',      cylinders: 1, amount: 'LKR 3,400', status: 'pending',   createdAt: '2026-09-04T11:00:00Z' },
-];
+const fmtLKR = (v) => `Rs. ${Number(v || 0).toLocaleString('en-LK')}`;
+const orderCylinderCount = (o) => (o.items || []).reduce((sum, i) => sum + (i.quantity || 0), 0);
 
 /* ===================================================
    SECTION: DASHBOARD
@@ -142,8 +137,8 @@ function DashboardSection({ customers, owners, orders }) {
     { icon: Icons.orders,    color: 'green',  value: orders.length,    label: 'Total Orders' },
     {
       icon: Icons.check, color: 'blue',
-      value: orders.filter(o => o.status === 'delivered').length,
-      label: 'Delivered Orders',
+      value: orders.filter(o => o.status === 'collected').length,
+      label: 'Collected Orders',
     },
   ];
 
@@ -177,9 +172,9 @@ function DashboardSection({ customers, owners, orders }) {
           <table className="admin-table">
             <thead>
               <tr>
-                <th>Order ID</th>
+                <th>Order</th>
                 <th>Customer</th>
-                <th>Owner</th>
+                <th>Shop</th>
                 <th>Cylinders</th>
                 <th>Amount</th>
                 <th>Status</th>
@@ -189,11 +184,11 @@ function DashboardSection({ customers, owners, orders }) {
             <tbody>
               {orders.slice(0, 5).map(o => (
                 <tr key={o._id}>
-                  <td style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--text-muted)' }}>#{o._id.slice(-5)}</td>
-                  <td>{o.customer}</td>
-                  <td>{o.owner}</td>
-                  <td style={{ textAlign: 'center' }}>{o.cylinders}</td>
-                  <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{o.amount}</td>
+                  <td style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--text-muted)' }}>{o.token || `#${o._id.slice(-6)}`}</td>
+                  <td>{o.customerId?.name || '—'}</td>
+                  <td>{o.shopId?.shopName || '—'}</td>
+                  <td style={{ textAlign: 'center' }}>{orderCylinderCount(o)}</td>
+                  <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{fmtLKR(o.totalAmount)}</td>
                   <td>
                     <span className={`status-badge ${o.status}`}>
                       <span className="status-dot" />
@@ -645,16 +640,20 @@ function OwnersSection({ owners, loading, onRefresh, toast }) {
 /* ===================================================
    SECTION: ORDERS
    =================================================== */
-function OrdersSection({ orders }) {
+function OrdersSection({ orders, loading }) {
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [page, setPage] = useState(1);
+  const [expanded, setExpanded] = useState(null);
   const PER_PAGE = 8;
 
   const filtered = orders.filter(o => {
-    const matchSearch = o.customer.toLowerCase().includes(search.toLowerCase()) ||
-      o.owner.toLowerCase().includes(search.toLowerCase()) ||
-      o._id.toLowerCase().includes(search.toLowerCase());
+    const q = search.toLowerCase();
+    const matchSearch = !q ||
+      (o.customerId?.name || '').toLowerCase().includes(q) ||
+      (o.shopId?.shopName || '').toLowerCase().includes(q) ||
+      (o.token || '').toLowerCase().includes(q) ||
+      o._id.toLowerCase().includes(q);
     const matchStatus = filterStatus === 'all' || o.status === filterStatus;
     return matchSearch && matchStatus;
   });
@@ -697,7 +696,8 @@ function OrdersSection({ orders }) {
             >
               <option value="all">All Status</option>
               <option value="pending">Pending</option>
-              <option value="delivered">Delivered</option>
+              <option value="ready">Ready</option>
+              <option value="collected">Collected</option>
               <option value="cancelled">Cancelled</option>
             </select>
           </div>
@@ -705,7 +705,7 @@ function OrdersSection({ orders }) {
 
         {/* Summary chips */}
         <div style={{ display: 'flex', gap: 10, padding: '12px 18px', borderBottom: '1px solid var(--border-subtle)', flexWrap: 'wrap' }}>
-          {['pending', 'delivered', 'cancelled'].map(s => (
+          {['pending', 'ready', 'collected', 'cancelled'].map(s => (
             <div key={s}
               onClick={() => { setFilterStatus(s === filterStatus ? 'all' : s); setPage(1); }}
               style={{ cursor: 'pointer' }}>
@@ -721,9 +721,9 @@ function OrdersSection({ orders }) {
           <table className="admin-table">
             <thead>
               <tr>
-                <th>Order ID</th>
+                <th>Order</th>
                 <th>Customer</th>
-                <th>Shop Owner</th>
+                <th>Shop</th>
                 <th>Cylinders</th>
                 <th>Amount</th>
                 <th>Status</th>
@@ -731,7 +731,11 @@ function OrdersSection({ orders }) {
               </tr>
             </thead>
             <tbody>
-              {paginated.length === 0 ? (
+              {loading ? (
+                <tr className="admin-loading-row">
+                  <td colSpan="7"><div className="admin-spinner" style={{ margin: '0 auto' }} /></td>
+                </tr>
+              ) : paginated.length === 0 ? (
                 <tr>
                   <td colSpan="7">
                     <div className="admin-table-empty">
@@ -741,25 +745,46 @@ function OrdersSection({ orders }) {
                   </td>
                 </tr>
               ) : paginated.map(o => (
-                <tr key={o._id}>
-                  <td style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--text-muted)' }}>#{o._id.slice(-6)}</td>
-                  <td>
-                    <div className="user-cell">
-                      <div className="user-avatar" style={{ width: 28, height: 28, fontSize: '0.65rem' }}>{initials(o.customer)}</div>
-                      {o.customer}
-                    </div>
-                  </td>
-                  <td>
-                    <div className="user-cell">
-                      <div className="user-avatar" style={{ width: 28, height: 28, fontSize: '0.65rem', background: 'linear-gradient(135deg, var(--brand-amber), #D97706)' }}>{initials(o.owner)}</div>
-                      {o.owner}
-                    </div>
-                  </td>
-                  <td style={{ textAlign: 'center', fontWeight: 600 }}>{o.cylinders}</td>
-                  <td style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{o.amount}</td>
-                  <td><span className={`status-badge ${o.status}`}><span className="status-dot" />{o.status}</span></td>
-                  <td>{fmtDate(o.createdAt)}</td>
-                </tr>
+                <Fragment key={o._id}>
+                  <tr onClick={() => setExpanded(expanded === o._id ? null : o._id)} style={{ cursor: 'pointer' }}>
+                    <td style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--text-muted)' }}>{o.token || `#${o._id.slice(-6)}`}</td>
+                    <td>
+                      <div className="user-cell">
+                        <div className="user-avatar" style={{ width: 28, height: 28, fontSize: '0.65rem' }}>{initials(o.customerId?.name)}</div>
+                        {o.customerId?.name || '—'}
+                      </div>
+                    </td>
+                    <td>
+                      <div className="user-cell">
+                        <div className="user-avatar" style={{ width: 28, height: 28, fontSize: '0.65rem', background: 'linear-gradient(135deg, var(--brand-amber), #D97706)' }}>{initials(o.shopId?.shopName)}</div>
+                        {o.shopId?.shopName || '—'}
+                      </div>
+                    </td>
+                    <td style={{ textAlign: 'center', fontWeight: 600 }}>{orderCylinderCount(o)}</td>
+                    <td style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{fmtLKR(o.totalAmount)}</td>
+                    <td><span className={`status-badge ${o.status}`}><span className="status-dot" />{o.status}</span></td>
+                    <td>{fmtDate(o.createdAt)}</td>
+                  </tr>
+                  {expanded === o._id && (
+                    <tr>
+                      <td colSpan="7" style={{ background: 'var(--bg-elevated)', padding: '14px 18px' }}>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: o.shopId?.address ? 8 : 0 }}>
+                          {(o.items || []).map((item, i) => (
+                            <span key={i} style={{ fontSize: '0.75rem', background: 'var(--brand-tint)', color: 'var(--brand-amber)', padding: '4px 10px', borderRadius: 'var(--r-pill)', border: '1px solid var(--brand-border-soft)' }}>
+                              {item.cylinderSize} {item.gasType} × {item.quantity} — {fmtLKR(item.price)}
+                            </span>
+                          ))}
+                        </div>
+                        {o.shopId?.address && (
+                          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Shop address: {o.shopId.address}</div>
+                        )}
+                        {o.customerId?.email && (
+                          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{o.customerId.email} · {o.customerId.phone}</div>
+                        )}
+                      </td>
+                    </tr>
+                  )}
+                </Fragment>
               ))}
             </tbody>
           </table>
@@ -1039,8 +1064,9 @@ export default function AdminDashboard() {
   // Data state
   const [customers, setCustomers] = useState(MOCK_CUSTOMERS);
   const [owners, setOwners] = useState(MOCK_OWNERS);
-  const [orders] = useState(MOCK_ORDERS);
+  const [orders, setOrders] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
+  const [loadingOrders, setLoadingOrders] = useState(false);
 
   /* ── Auth guard ── */
   useEffect(() => {
@@ -1074,6 +1100,22 @@ export default function AdminDashboard() {
   }, [isAuthenticated]);
 
   useEffect(() => { fetchUsers(); }, [fetchUsers]);
+
+  /* ── Fetch real orders ── */
+  const fetchOrders = useCallback(async () => {
+    if (!isAuthenticated || role !== 'ADMIN') return;
+    setLoadingOrders(true);
+    try {
+      const { data } = await api.get('/admin/orders');
+      setOrders(Array.isArray(data) ? data : []);
+    } catch {
+      setOrders([]);
+    } finally {
+      setLoadingOrders(false);
+    }
+  }, [isAuthenticated, role]);
+
+  useEffect(() => { fetchOrders(); }, [fetchOrders]);
 
   /* ── Toast helpers ── */
   const toast = useCallback((type, message) => {
@@ -1237,7 +1279,7 @@ export default function AdminDashboard() {
               </button>
 
               {/* Refresh */}
-              <button className="admin-topbar-btn" onClick={() => { fetchUsers(); checkDbStatus(); }} title="Refresh data">
+              <button className="admin-topbar-btn" onClick={() => { fetchUsers(); fetchOrders(); checkDbStatus(); }} title="Refresh data">
                 <Icon d={Icons.refresh} size={16} />
               </button>
             </div>
@@ -1255,7 +1297,7 @@ export default function AdminDashboard() {
               <OwnersSection owners={owners} loading={loadingUsers} onRefresh={fetchUsers} toast={toast} />
             )}
             {activeSection === 'orders' && (
-              <OrdersSection orders={orders} />
+              <OrdersSection orders={orders} loading={loadingOrders} />
             )}
             {activeSection === 'settings' && (
               <SettingsSection user={user} toast={toast} dbStatus={dbStatus} onRefreshDb={checkDbStatus} />
